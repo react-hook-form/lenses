@@ -21,27 +21,27 @@
   <a href="https://github.com/react-hook-form/lenses/tree/main/examples/stories">Examples</a>
 </p>
 
-# React Hook Form Lenses
+## React Hook Form Lenses
 
 React Hook Form Lenses is a powerful TypeScript-first library that brings the elegance of functional lenses to React Hook Form. By providing type-safe manipulation of nested form state, it enables developers to precisely control and transform complex form data with ease. The library's composable lens operations make it simple to work with deeply nested structures while maintaining type safety, leading to more maintainable and reusable form components.
 
-## Installation
+### Installation
 
 ```bash
 npm install @hookform/lenses
 ```
 
-## Features
+### Features
 
-- 🎯 **Type-Safe Form State**: Focus on specific parts of your form state with full TypeScript support and precise type inference
-- 🔍 **Functional Lenses**: Build complex form state transformations through composable lens operations
-- 🌳 **Deep Structure Support**: Handle deeply nested structures and arrays elegantly with specialized array operations
-- 🎭 **Seamless Integration**: Work smoothly with React Hook Form's Control API and existing functionality
-- ⚡️ **Optimized Performance**: Each lens is cached and reused for optimal performance
-- 🔄 **Array Handling**: Specialized support for array fields with type-safe mapping
-- 🧩 **Composable API**: Build complex form state transformations through lens composition
+- **Type-Safe Form State**: Focus on specific parts of your form state with full TypeScript support and precise type inference
+- **Functional Lenses**: Build complex form state transformations through composable lens operations
+- **Deep Structure Support**: Handle deeply nested structures and arrays elegantly with specialized array operations
+- **Seamless Integration**: Work smoothly with React Hook Form's Control API and existing functionality
+- **Optimized Performance**: Each lens is cached and reused for optimal performance
+- **Array Handling**: Specialized support for array fields with type-safe mapping
+- **Composable API**: Build complex form state transformations through lens composition
 
-## Quickstart
+### Quickstart
 
 ```tsx
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -93,11 +93,11 @@ function StringInput({ lens }: { lens: Lens<string> }) {
 }
 ```
 
-## API Reference
+### API Reference
 
-### Core Types
+#### Core Types
 
-#### `Lens<T>`
+##### `Lens<T>`
 
 The main lens type that provides operations based on the field type
 
@@ -107,9 +107,9 @@ type LensWithObject = Lens<{ name: string; age: number }>;
 type LensWithPrimitive = Lens<string>;
 ```
 
-### Hooks
+#### Hooks
 
-#### `useLens`
+##### `useLens`
 
 Creates a new lens instance
 
@@ -130,9 +130,9 @@ const lens = useLens(
 );
 ```
 
-### Lens Operations
+#### Lens Operations
 
-#### `focus`
+##### `focus`
 
 Creates a new lens focused on a specific path
 
@@ -143,7 +143,7 @@ const emailLens = lens.focus('profile.contact.email');
 const arrayItemLens = lens.focus('array.0');
 ```
 
-#### `reflect`
+##### `reflect`
 
 Transforms the lens structure with type inference.
 It is useful when you want to create a new lens from existing one with different shape to pass it to a shared component.
@@ -161,7 +161,7 @@ function SharedComponent({ lens }: { lens: Lens<{ name: string; phoneNumber: str
 }
 ```
 
-#### `join`
+##### `join`
 
 Combines two lenses into one. You have to provide a merger function because in runtime it is not clear to which prop path of two lenses subsequent lens operations will be applied.
 
@@ -178,7 +178,7 @@ function Card(props: { person: Lens<{ name: string }>; contact: Lens<{ phoneNumb
 }
 ```
 
-#### `map` (Array Lenses)
+##### `map` (Array Lenses)
 
 Maps over array fields with `useFieldArray` integration
 
@@ -190,7 +190,7 @@ function ContactsList({ lens }: { lens: Lens<Contact[]> }) {
 }
 ```
 
-#### `interop`
+##### `interop`
 
 The `interop` method provides integration with react-hook-form by exposing the underlying `control` and `name` properties. This allows you to connect your lens to react-hook-form's control API.
 
@@ -226,7 +226,7 @@ return (
 );
 ```
 
-## Caching System
+### Caching System
 
 All the lenses are cached to prevent component re-renders when utilizing `React.memo`.
 It means that focusing the same path multiple times will not create new lens instance.
@@ -249,9 +249,9 @@ lens.reflect(useCallback((l) => l.focus('firstName'), []));
 
 Here is the case where [React Compiler](https://react.dev/learn/react-compiler) can be extremely helpful. Because the function you pass to `reflect` has no side effects, react compiler will hoist it to module scope and thus lens cache will work as expected.
 
-## Advanced Usage
+### Advanced Usage
 
-### Manual Lens Creation
+#### Manual Lens Creation
 
 You can create lenses manually without `useLens` hook by utilizing the `LensCore` class:
 
