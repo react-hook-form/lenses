@@ -1,4 +1,14 @@
 <div align="center">
+    <p align="center">
+        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" />
+        </a>
+    </p>
+</div>
+
+<p align="center">Performant, flexible and extensible forms with easy to use validation.</p>
+
+<div align="center">
 
 [![npm downloads](https://img.shields.io/npm/dm/@hookform/lenses.svg?style=for-the-badge)](https://www.npmjs.com/package/@hookform/lenses)
 [![npm](https://img.shields.io/npm/dt/@hookform/lenses.svg?style=for-the-badge)](https://www.npmjs.com/package/@hookform/lenses)
@@ -15,16 +25,6 @@
 
 React Hook Form Lenses is a powerful TypeScript-first library that brings the elegance of functional lenses to React Hook Form. By providing type-safe manipulation of nested form state, it enables developers to precisely control and transform complex form data with ease. The library's composable lens operations make it simple to work with deeply nested structures while maintaining type safety, leading to more maintainable and reusable form components.
 
-## Features
-
-- 🎯 **Type-Safe Form State**: Focus on specific parts of your form state with full TypeScript support and precise type inference
-- 🔍 **Functional Lenses**: Build complex form state transformations through composable lens operations
-- 🌳 **Deep Structure Support**: Handle deeply nested structures and arrays elegantly with specialized array operations
-- 🎭 **Seamless Integration**: Work smoothly with React Hook Form's Control API and existing functionality
-- ⚡️ **Optimized Performance**: Each lens is cached and reused for optimal performance
-- 🔄 **Array Handling**: Specialized support for array fields with type-safe mapping
-- 🧩 **Composable API**: Build complex form state transformations through lens composition
-
 ## Installation
 
 ```bash
@@ -34,6 +34,16 @@ yarn add @hookform/lenses
 # or
 pnpm add @hookform/lenses
 ```
+
+## Features
+
+- 🎯 **Type-Safe Form State**: Focus on specific parts of your form state with full TypeScript support and precise type inference
+- 🔍 **Functional Lenses**: Build complex form state transformations through composable lens operations
+- 🌳 **Deep Structure Support**: Handle deeply nested structures and arrays elegantly with specialized array operations
+- 🎭 **Seamless Integration**: Work smoothly with React Hook Form's Control API and existing functionality
+- ⚡️ **Optimized Performance**: Each lens is cached and reused for optimal performance
+- 🔄 **Array Handling**: Specialized support for array fields with type-safe mapping
+- 🧩 **Composable API**: Build complex form state transformations through lens composition
 
 ## Quickstart
 
