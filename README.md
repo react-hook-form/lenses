@@ -29,10 +29,6 @@ React Hook Form Lenses is a powerful TypeScript-first library that brings the el
 
 ```bash
 npm install @hookform/lenses
-# or
-yarn add @hookform/lenses
-# or
-pnpm add @hookform/lenses
 ```
 
 ## Features
