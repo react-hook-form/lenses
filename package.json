@@ -1,7 +1,7 @@
 {
   "name": "@hookform/lenses",
   "description": "Type-safe lenses for React Hook Form that enable precise control over nested form state. Build reusable form components with composable operations, array handling, and full TypeScript support.",
-  "version": "0.1.0",
+  "version": "0.1.1-next.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
