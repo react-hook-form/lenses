@@ -73,3 +73,19 @@ test('interop can hold the union value of the field', () => {
   expect(interop.interopName).toBe('a');
   expect(interop.interopControl).toBe(result.current.form.control);
 });
+
+test('interop can hold the literal union value of the field', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{ type: 'admin' | 'general' }>();
+    const lens = useLens({ control: form.control });
+    const ctrl = useController(lens.focus('type').interop());
+    return { lens, form, ctrl };
+  });
+
+  const interop = result.current.lens.focus('type').interop((interopControl, interopName) => ({ interopName, interopControl }));
+
+  expectTypeOf(result.current.ctrl.field.value).toEqualTypeOf<'admin' | 'general'>();
+
+  expect(interop.interopName).toBe('type');
+  expect(interop.interopControl).toBe(result.current.form.control);
+});
