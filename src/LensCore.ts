@@ -5,7 +5,7 @@ import type { Lens } from './types/lenses';
 import type { LensesCache } from './utils';
 
 interface Settings {
-  lensesMap?: LensesDeepMap | undefined;
+  lensesMap?: LensesDeepMap<unknown> | undefined;
   propPath?: string | undefined;
 }
 
@@ -55,7 +55,7 @@ export class LensCore {
     return focusedLens;
   }
 
-  public reflect(getter: (original: LensCore) => LensesMap): LensCore {
+  public reflect(getter: (original: LensCore) => LensesMap<unknown>): LensCore {
     const fromCache = this.cache.complex.get(getter);
 
     if (fromCache) {
@@ -70,7 +70,7 @@ export class LensCore {
     return newLens;
   }
 
-  public join(another: LensCore, merger: (original: LensCore, another: LensCore) => LensesMap): LensCore {
+  public join(another: LensCore, merger: (original: LensCore, another: LensCore) => LensesMap<unknown>): LensCore {
     const fromCache = this.cache.complex.get(merger);
 
     if (fromCache) {

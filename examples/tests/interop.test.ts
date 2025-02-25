@@ -57,3 +57,19 @@ test('interop can hold the value of the field', () => {
   expect(interop.interopName).toBe('a');
   expect(interop.interopControl).toBe(result.current.form.control);
 });
+
+test('interop can hold the union value of the field', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{ a: string | number }>();
+    const lens = useLens({ control: form.control });
+    const ctrl = useController(lens.focus('a').interop());
+    return { lens, form, ctrl };
+  });
+
+  const interop = result.current.lens.focus('a').interop((interopControl, interopName) => ({ interopName, interopControl }));
+
+  expectTypeOf(result.current.ctrl.field.value).toEqualTypeOf<string | number>();
+
+  expect(interop.interopName).toBe('a');
+  expect(interop.interopControl).toBe(result.current.form.control);
+});

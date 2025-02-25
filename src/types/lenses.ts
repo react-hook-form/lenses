@@ -85,9 +85,7 @@ export interface HookFormInterop<T extends FieldValues, Name> {
 }
 
 export interface LensInterop<T> {
-  interop: T extends FieldValues
-    ? HookFormInterop<NonObjectFieldShim<T>, ShimKeyName>
-    : HookFormInterop<NonObjectFieldShim<T>, ShimKeyName>;
+  interop: HookFormInterop<NonObjectFieldShim<T>, ShimKeyName>;
 }
 
 export interface LensFocus<T> {
@@ -169,7 +167,7 @@ export interface LensReflect<T> {
    * }
    * ```
    */
-  reflect: <T2 extends LensesMap>(getter: (original: Lens<T>) => T2) => Lens<UnwrapLens<T2>>;
+  reflect: <T2>(getter: (original: Lens<T>) => LensesMap<T2>) => Lens<UnwrapLens<LensesMap<T2>>>;
 }
 
 export interface LensJoin<T> {
@@ -219,7 +217,7 @@ export interface LensJoin<T> {
    * }
    * ```
    */
-  join: <T2, R extends LensesMap>(another: T2, merger: (original: Lens<T>, another: T2) => R) => Lens<UnwrapLens<R>>;
+  join: <T2, R>(another: T2, merger: (original: Lens<T>, another: T2) => LensesMap<R>) => Lens<UnwrapLens<LensesMap<R>>>;
 }
 
 export interface LensMap<T extends any[]> {

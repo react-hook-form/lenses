@@ -1,11 +1,11 @@
 import type { Lens, NonObjectFieldShim } from './lenses';
 
-export type LensesMap = {
-  [key: string]: Lens<[] | object | string | number | boolean | undefined | null>;
+export type LensesMap<T> = {
+  [key in keyof T]: Lens<T[key]>;
 };
 
-export type LensesDeepMap = {
-  [key: string]: Lens<[] | object | string | number | boolean | undefined | null> | LensesDeepMap;
+export type LensesDeepMap<T> = {
+  [key: string]: Lens<T> | LensesDeepMap<T>;
 };
 
 export type UnwrapLens<T> =
