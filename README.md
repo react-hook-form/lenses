@@ -150,7 +150,7 @@ It is useful when you want to create a new lens from existing one with different
 
 ```tsx
 const contactLens = lens.reflect((l) => ({
-  firstName: l.focus('profile.contact.firstName'),
+  name: l.focus('profile.contact.firstName'),
   phoneNumber: l.focus('profile.contact.phone'),
 }));
 
