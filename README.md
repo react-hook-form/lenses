@@ -58,8 +58,6 @@ function FormComponent() {
   }>({});
 
   const lens = useLens({ control });
-  const children = lens.focus('children');
-  const { fields: childrenFields } = useFieldArray(children.interop());
 
   return (
     <form onSubmit={handleSubmit(console.log)}>
@@ -69,22 +67,33 @@ function FormComponent() {
           surname: l.focus('lastName'),
         }))}
       />
-
-      {children.map(childrenFields, (l, key) => (
-        <PersonForm key={key} lens={l} />
-      ))}
-
+      <ChildForm lens={lens.focus('children')} />
       <input type="submit" />
     </form>
   );
 }
 
-function PersonForm({ lens }: { lens: Lens<{ name: string; surname: string }> }) {
+function ChildForm({ lens }: { lens: Lens<{ name: string; surname: string }[]> }) {
+  const { fields, append } = useFieldArray(lens.interop());
+
   return (
     <>
+      <button type="button" onClick={() => append({ name: '', surname: '' })}>
+        Add child
+      </button>
+      {lens.map(fields, (l, key) => (
+        <PersonForm key={key} lens={l} />
+      ))}
+    </>
+  );
+}
+
+function PersonForm({ lens }: { lens: Lens<{ name: string; surname: string }> }) {
+  return (
+    <div>
       <StringInput lens={lens.focus('name')} />
       <StringInput lens={lens.focus('surname')} />
-    </>
+    </div>
   );
 }
 
