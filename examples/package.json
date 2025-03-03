@@ -1,4 +1,7 @@
 {
+  "name": "@hookform/lenses-examples",
+  "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
     "storybook": "storybook dev -p 6006",
