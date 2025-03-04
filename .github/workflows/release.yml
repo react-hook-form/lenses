@@ -24,8 +24,6 @@ jobs:
 
       - name: Setup environment
         uses: ./.github/actions/setup
-        with:
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Build
         run: bun run build
