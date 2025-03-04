@@ -36,9 +36,12 @@
     "build": "tsup",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css,md}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
-    "lint:fix": "pnpm lint --fix",
-    "test:run": "pnpm --dir ./examples test:run"
+    "lint:fix": "bun lint --fix",
+    "test:run": "bun --dir ./examples test:run"
   },
+  "workspaces": [
+    "examples"
+  ],
   "peerDependencies": {
     "react": "^16.8.0 || ^17 || ^18 || ^19",
     "react-hook-form": "^7.0.0"
@@ -61,15 +64,14 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "pnpm lint:fix",
-      "pnpm prettier:fix"
+      "bun run lint:fix",
+      "bun run prettier:fix"
     ],
     "*.{md,json,yml}": [
       "prettier --write"
     ]
   },
   "engines": {
-    "node": ">=22.0.0"
-  },
-  "packageManager": "pnpm@9.15.3"
+    "bun": ">=1.2"
+  }
 }
