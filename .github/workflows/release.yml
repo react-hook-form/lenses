@@ -22,11 +22,10 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Build
-        run: pnpm build
+        run: bun run build
 
-      - name: Semantic Release
+      - name: Publish
+        run: bunx semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+          GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'

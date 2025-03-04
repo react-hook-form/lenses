@@ -1,33 +1,28 @@
 name: 'Setup Environment'
-description: 'Sets up Node.js, pnpm, and installs dependencies'
+description: 'Sets up Bun and installs dependencies'
 
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
       with:
-        node-version-file: '.nvmrc'
+        bun-version-file: '.bun-version'
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        run_install: false
-
-    - name: Get pnpm store directory
-      id: pnpm-cache
+    - name: Get Bun cache directory
+      id: bun-cache-dir
       shell: bash
       run: |
-        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+        echo "DIR=$(bun pm cache dir)" >> $GITHUB_OUTPUT
 
-    - name: Setup pnpm cache
+    - name: Setup Bun cache
       uses: actions/cache@v3
       with:
-        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        path: ${{ steps.bun-cache-dir.outputs.DIR }}
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
         restore-keys: |
-          ${{ runner.os }}-pnpm-store-
+          ${{ runner.os }}-bun-
 
     - name: Install dependencies
-      run: pnpm install
+      run: bun install
       shell: bash

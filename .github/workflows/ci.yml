@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Lint
-        run: pnpm lint
+        run: bun lint
 
   test:
     name: Test
@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Build
-        run: pnpm build
+        run: bun run build
 
       - name: Run tests
-        run: pnpm test:run
+        run: bun test:run
