@@ -28,7 +28,6 @@
     "@vitest/coverage-v8": "^3.0.7",
     "babel-plugin-react-compiler": "^19.0.0-beta-40c6c23-20250301",
     "jsdom": "^26.0.0",
-    "lint-staged": "^15.4.3",
     "storybook": "8.6.3",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
