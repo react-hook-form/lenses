@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    paths-ignore:
+      - '.gitignore'
+      - '.npmignore'
+      - '*.md'
 
 jobs:
   release:
     name: Release
+    if: github.repository == 'react-hook-form/lenses' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
