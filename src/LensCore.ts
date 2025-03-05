@@ -39,6 +39,22 @@ export class LensCore {
 
           if (reflectedPropPath) {
             nestedPath = `${this.settings.propPath}.${reflectedPropPath}`;
+
+            if (!this.cache.primitives.has(nestedPath)) {
+              const newLens = new LensCore(arrayReflectMapper.control, arrayReflectMapper.cache, {
+                ...arrayReflectMapper.settings,
+                propPath: nestedPath,
+              });
+              this.cache.primitives.set(nestedPath, newLens);
+            }
+
+            const focusedLens = this.cache.primitives.get(nestedPath);
+
+            if (!focusedLens) {
+              throw new Error(`There is no focused lens: ${nestedPath}`);
+            }
+
+            return focusedLens;
           }
         }
       } else {
