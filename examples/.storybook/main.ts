@@ -13,7 +13,7 @@ const config: StorybookConfig = {
     const { mergeConfig } = await import('vite');
 
     return mergeConfig(config, {
-      plugins: [checker({ typescript: true }), tsconfigPaths()],
+      plugins: [checker({ typescript: true, overlay: false }), tsconfigPaths()],
     });
   },
 };
