@@ -2,7 +2,6 @@
 
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import checker from 'vite-plugin-checker';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
@@ -13,7 +12,6 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
-    checker({ typescript: true }),
   ],
   test: {
     typecheck: { enabled: true },
@@ -22,7 +20,6 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/*.test.+(ts|tsx)', '**/*.test-d.+(ts|tsx)'],
-    exclude: ['**/node_modules/**', '**/__fixtures__/**', '/\\.', '.history'],
     clearMocks: true,
     restoreMocks: true,
     coverage: {

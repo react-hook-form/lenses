@@ -1,0 +1,28 @@
+name: 'Setup Environment'
+description: 'Sets up Bun and installs dependencies'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version-file: '.bun-version'
+
+    - name: Get Bun cache directory
+      id: bun-cache-dir
+      shell: bash
+      run: |
+        echo "DIR=$(bun pm cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Setup Bun cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.bun-cache-dir.outputs.DIR }}
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - name: Install dependencies
+      run: bun install
+      shell: bash
