@@ -1,26 +1,23 @@
 import { type Control, type FieldValues, get } from 'react-hook-form';
 
-import { type LensesDeepMap, type LensesMap } from './types/helpers';
 import type { Lens } from './types/lenses';
 import type { LensesCache } from './utils';
 
 interface Settings {
-  lensesMap?: LensesDeepMap<unknown> | undefined;
+  lensesMap?: Record<string, LensCore> | [Record<string, LensCore>] | undefined;
   propPath?: string | undefined;
+  restructureSourcePath?: string | undefined;
 }
 
 export class LensCore {
-  private settings: Settings;
-
+  public settings: Settings;
   public control: Control;
   public cache: LensesCache;
-  public name?: string | undefined;
 
   private constructor(control: Control<any>, cache: LensesCache, settings: Settings = {}) {
     this.control = control;
     this.cache = cache;
     this.settings = settings;
-    this.name = settings.propPath;
   }
 
   public static create<TFieldValues extends FieldValues = FieldValues>(
@@ -31,18 +28,33 @@ export class LensCore {
   }
 
   public focus(propPath: string): LensCore {
-    const nestedPath = this.settings.propPath === undefined ? propPath : `${this.settings.propPath}.${propPath}`;
+    let nestedPath = this.settings.propPath === undefined ? propPath : `${this.settings.propPath}.${propPath}`;
 
     if (this.settings.lensesMap) {
-      const result = get(this.settings.lensesMap, nestedPath);
+      if (Array.isArray(this.settings.lensesMap)) {
+        const arrayReflectMapper: LensCore | undefined = get(this.settings.lensesMap[0], propPath);
 
-      if (result) {
-        return result;
+        if (arrayReflectMapper) {
+          const reflectedPropPath = arrayReflectMapper.settings.propPath?.slice(`${this.settings.restructureSourcePath}.`.length);
+
+          if (reflectedPropPath) {
+            nestedPath = `${this.settings.propPath}.${reflectedPropPath}`;
+          }
+        }
+      } else {
+        const result = get(this.settings.lensesMap, propPath);
+        if (result) {
+          return result;
+        }
       }
     }
 
     if (!this.cache.primitives.has(nestedPath)) {
-      const newLens = new LensCore(this.control, this.cache, { propPath: nestedPath });
+      const newLens = new LensCore(this.control, this.cache, {
+        propPath: nestedPath,
+        lensesMap: this.settings.lensesMap,
+        restructureSourcePath: this.settings.restructureSourcePath,
+      });
       this.cache.primitives.set(nestedPath, newLens);
     }
 
@@ -55,7 +67,7 @@ export class LensCore {
     return focusedLens;
   }
 
-  public reflect(getter: (original: LensCore) => LensesMap<unknown>): LensCore {
+  public reflect(getter: (original: LensCore) => Record<string, LensCore> | [Record<string, LensCore>]): LensCore {
     const fromCache = this.cache.complex.get(getter);
 
     if (fromCache) {
@@ -63,14 +75,19 @@ export class LensCore {
     }
 
     const focusContext = getter(this);
-    const newLens = new LensCore(this.control, this.cache, { lensesMap: focusContext });
+
+    const newLens = new LensCore(this.control, this.cache, {
+      lensesMap: focusContext,
+      propPath: this.settings.propPath,
+      restructureSourcePath: this.settings.propPath,
+    });
 
     this.cache.complex.set(getter, { lens: newLens });
 
     return newLens;
   }
 
-  public join(another: LensCore, merger: (original: LensCore, another: LensCore) => LensesMap<unknown>): LensCore {
+  public join(another: LensCore, merger: (original: LensCore, another: LensCore) => Record<string, LensCore>): LensCore {
     const fromCache = this.cache.complex.get(merger);
 
     if (fromCache) {
@@ -78,7 +95,11 @@ export class LensCore {
     }
 
     const focusContext = merger(this, another);
-    const newLens = new LensCore(this.control, this.cache, { lensesMap: focusContext });
+    const newLens = new LensCore(this.control, this.cache, {
+      lensesMap: focusContext,
+      propPath: this.settings.propPath,
+      restructureSourcePath: this.settings.propPath,
+    });
 
     this.cache.complex.set(merger, { lens: newLens });
 
@@ -102,6 +123,6 @@ export class LensCore {
   }
 
   public interop(cb?: (control: Control, name: string | undefined) => any): { control: Control; name: string | undefined } {
-    return cb ? cb(this.control, this.name) : { control: this.control, name: this.name };
+    return cb ? cb(this.control, this.settings.propPath) : { control: this.control, name: this.settings.propPath };
   }
 }

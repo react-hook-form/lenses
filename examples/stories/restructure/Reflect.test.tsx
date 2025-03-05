@@ -18,7 +18,7 @@ test('should change lens via reflect', async () => {
   expect(handleSubmit).toHaveBeenCalledWith(
     {
       firstName: 'joe',
-      lastName: 'doe',
+      lastName: { value: 'doe' },
     },
     expect.anything(),
   );
