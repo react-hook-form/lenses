@@ -30,6 +30,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./rhf": {
+      "types": "./dist/rhf/index.d.ts",
+      "import": "./dist/rhf/index.js",
+      "require": "./dist/rhf/index.cjs"
     }
   },
   "scripts": {

@@ -138,7 +138,11 @@ export class LensCore {
     });
   }
 
-  public interop(cb?: (control: Control, name: string | undefined) => any): { control: Control; name: string | undefined } {
-    return cb ? cb(this.control, this.settings.propPath) : { control: this.control, name: this.settings.propPath };
+  public interop(cb?: (control: Control, name: string | undefined, lens: LensCore) => any): {
+    control: Control;
+    name: string | undefined;
+    lens: LensCore;
+  } {
+    return cb ? cb(this.control, this.settings.propPath, this) : { control: this.control, name: this.settings.propPath, lens: this };
   }
 }

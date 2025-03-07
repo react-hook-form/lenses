@@ -1,5 +1,6 @@
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Lens, useLens } from '@hookform/lenses';
+import { useFieldArray } from '@hookform/lenses/rhf';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 
@@ -93,7 +94,7 @@ function Items({ lens }: { lens: Lens<{ data: string }[]> }) {
       <button
         type="button"
         onClick={() => {
-          append({ data: '' });
+          append({ data: 'more' });
         }}
       >
         Add item
