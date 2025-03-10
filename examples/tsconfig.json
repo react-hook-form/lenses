@@ -6,7 +6,8 @@
     "moduleResolution": "bundler",
     "baseUrl": "./",
     "paths": {
-      "@hookform/lenses": ["../src"]
+      "@hookform/lenses": ["../src"],
+      "@hookform/lenses/rhf": ["../src/rhf"]
     },
     "types": ["vitest/globals"],
     "noEmit": true,
