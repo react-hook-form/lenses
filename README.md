@@ -44,8 +44,9 @@ npm install @hookform/lenses
 ### Quickstart
 
 ```tsx
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Lens, useLens } from '@hookform/lenses';
+import { useFieldArray } from '@hookform/lenses/rhf';
 
 function FormComponent() {
   const { handleSubmit, control } = useForm<{
@@ -170,6 +171,20 @@ function SharedComponent({ lens }: { lens: Lens<{ name: string; phoneNumber: str
 }
 ```
 
+Also, you can restructure array lens:
+
+```tsx
+function ArrayComponent({ lens }: { lens: Lens<{ value: string }[]> }) {
+  return <AnotherComponent lens={lens.reflect((l) => [{ data: l.focus('value') }])} />;
+}
+
+function AnotherComponent({ lens }: { lens: Lens<{ data: string }[]> }) {
+  // ...
+}
+```
+
+Pay attention that in case of array reflecting you have to pass an array with single item.
+
 ##### `join`
 
 Combines two lenses into one. You have to provide a merger function because in runtime it is not clear to which prop path of two lenses subsequent lens operations will be applied.
@@ -192,6 +207,8 @@ function Card(props: { person: Lens<{ name: string }>; contact: Lens<{ phoneNumb
 Maps over array fields with `useFieldArray` integration
 
 ```tsx
+import { useFieldArray } from '@hookform/lenses/rhf';
+
 function ContactsList({ lens }: { lens: Lens<Contact[]> }) {
   const { fields } = useFieldArray(lens.interop());
 
