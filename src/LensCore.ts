@@ -103,25 +103,6 @@ export class LensCore {
     return newLens;
   }
 
-  public join(another: LensCore, merger: (original: LensCore, another: LensCore) => Record<string, LensCore>): LensCore {
-    const fromCache = this.cache?.get(this.settings.propPath ?? '', merger);
-
-    if (fromCache) {
-      return fromCache;
-    }
-
-    const focusContext = merger(this, another);
-    const newLens = new LensCore(this.control, this.cache, {
-      lensesMap: focusContext,
-      propPath: this.settings.propPath,
-      restructureSourcePath: this.settings.propPath,
-    });
-
-    this.cache?.set(newLens, this.settings.propPath ?? '', merger);
-
-    return newLens;
-  }
-
   public map<R>(
     fields: Record<string, any>[],
     mapper: (value: unknown, key: string, index: number, array: this) => R,

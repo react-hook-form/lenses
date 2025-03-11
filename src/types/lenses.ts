@@ -170,56 +170,6 @@ export interface LensReflect<T> {
   reflect: <T2>(getter: (original: Lens<T>) => LensesMap<T2>) => Lens<UnwrapLens<LensesMap<T2>>>;
 }
 
-export interface LensJoin<T> {
-  /**
-   * This method allows you to join two lenses into a single lens.
-   * This can be useful when you want to create a new lens from two existing lenses.
-   *
-   * @param another - The lens to join with the original lens.
-   * @param merger - A function that returns an object where each field is a lens.
-   *
-   * @example
-   * ```tsx
-   * function App() {
-   *   const { control, handleSubmit } = useForm<{
-   *     firstName: string;
-   *     lastName: string;
-   *   }>();
-   *
-   *   const lens = useLens({ control });
-   *   const firstName = lens.focus('firstName');
-   *   const lastName = lens.focus('lastName');
-   *
-   *   return (
-   *     <form onSubmit={handleSubmit(console.log)}>
-   *       <SharedComponent
-   *         lens={firstName.join(lastName, (firstNameLens, lastNameLens) => ({
-   *           name: firstNameLens,
-   *           surname: lastNameLens,
-   *         }))}
-   *       />
-   *       <input type="submit" />
-   *     </form>
-   *   );
-   * }
-   *
-   * function SharedComponent({ lens }: { lens: Lens<{ name: string; surname: string }> }) {
-   *   return (
-   *     <div>
-   *       <StringInput lens={lens.focus('name')} />
-   *       <StringInput lens={lens.focus('surname')} />
-   *     </div>
-   *   );
-   * }
-   *
-   * function StringInput({ lens }: { lens: Lens<string> }) {
-   *   return <input {...lens.interop((ctrl, name) => ctrl.register(name))} />;
-   * }
-   * ```
-   */
-  join: <T2, R>(another: T2, merger: (original: Lens<T>, another: T2) => LensesMap<R>) => Lens<UnwrapLens<LensesMap<R>>>;
-}
-
 export interface LensMap<T extends any[]> {
   /**
    * This method allows you to map an array lens.
@@ -260,11 +210,13 @@ export interface LensMap<T extends any[]> {
   map<R>(fields: T, mapper: (value: Lens<T[number]>, key: string, index: number, array: this) => R, keyName?: string): R[];
 }
 
-export interface ArrayLens<T extends any[]> extends LensMap<T>, LensFocus<T>, LensJoin<T> {
+export interface ArrayLens<T extends any[]> extends LensMap<T>, LensFocus<T> {
   reflect: <T2>(getter: (original: Lens<T[number]>) => [LensesMap<T2>]) => Lens<UnwrapLens<LensesMap<T2>>[]>;
 }
-export interface ObjectLens<T> extends LensFocus<T>, LensReflect<T>, LensJoin<T> {}
-export interface PrimitiveLens<T> extends LensReflect<T>, LensJoin<T> {}
+export interface ObjectLens<T> extends LensFocus<T>, LensReflect<T> {}
+// Will leave primitive lense interface for future use
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface PrimitiveLens<T> extends LensReflect<T> {}
 
 /**
  * This is a type that allows you to hold the type of a form element.
