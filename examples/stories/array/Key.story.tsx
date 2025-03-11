@@ -41,15 +41,11 @@ function Items({ lens }: { lens: Lens<Item[]> }) {
 
   return (
     <div>
-      {lens.map(
-        fields,
-        (l, key) => (
-          <div key={key}>
-            <StringInput label="Value" lens={l.focus('value')} />
-          </div>
-        ),
-        'anotherId',
-      )}
+      {lens.map(fields, (value, l) => (
+        <div key={value.anotherId}>
+          <StringInput label="Value" lens={l.focus('value')} />
+        </div>
+      ))}
     </div>
   );
 }

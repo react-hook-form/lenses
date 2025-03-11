@@ -12,7 +12,7 @@ test('map can create a new lens', () => {
 
   expectTypeOf(result.current.lens).toEqualTypeOf<Lens<{ items: { a: string }[] }>>();
 
-  const itemLenses = result.current.lens.focus('items').map([{ a: '1' }, { a: '2' }], (item) => item.focus('a'));
+  const itemLenses = result.current.lens.focus('items').map([{ a: '1' }, { a: '2' }], (_, item) => item.focus('a'));
 
   expectTypeOf(itemLenses).toEqualTypeOf<Lens<string>[]>();
 
@@ -20,7 +20,7 @@ test('map can create a new lens', () => {
   expect(itemLenses[1]?.interop()).toEqual({ name: 'items.1.a', control: result.current.form.control, lens: itemLenses[1] });
 });
 
-test('map callback accepts a keyName and index', () => {
+test('map callback accepts a value and index', () => {
   const { result } = renderHook(() => {
     const form = useForm<{ items: { a: string; myId: string }[] }>();
     const lens = useLens({ control: form.control });
@@ -35,19 +35,18 @@ test('map callback accepts a keyName and index', () => {
       { a: '1', myId: 'one' },
       { a: '2', myId: 'two' },
     ],
-    (l, keyName, index) => ({ lens: l, interop: l.interop(), keyName, index }),
-    'myId',
+    (value, l, index) => ({ lens: l, interop: l.interop(), id: value.myId, index }),
   );
 
   expect(itemLenses[0]).toMatchObject({
     interop: { name: 'items.0', control: result.current.form.control, lens: itemLenses[0]?.lens },
-    keyName: 'one',
+    id: 'one',
     index: 0,
   });
 
   expect(itemLenses[1]).toMatchObject({
     interop: { name: 'items.1', control: result.current.form.control, lens: itemLenses[1]?.lens },
-    keyName: 'two',
+    id: 'two',
     index: 1,
   });
 });

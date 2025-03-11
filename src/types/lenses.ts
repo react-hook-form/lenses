@@ -207,7 +207,7 @@ export interface LensMap<T extends any[]> {
    * }
    * ```
    */
-  map<R>(fields: T, mapper: (value: Lens<T[number]>, key: string, index: number, array: this) => R, keyName?: string): R[];
+  map<F extends T, R>(fields: F, mapper: (value: F[number], item: Lens<T[number]>, index: number, array: F, lens: this) => R): R[];
 }
 
 export interface ArrayLens<T extends any[]> extends LensMap<T>, LensFocus<T> {

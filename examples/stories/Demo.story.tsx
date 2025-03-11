@@ -50,8 +50,8 @@ function ChildForm({ lens }: { lens: Lens<Person[]> }) {
 
   return (
     <div>
-      {lens.map(fields, (l, key) => (
-        <PersonForm key={key} lens={l} />
+      {lens.map(fields, (value, l) => (
+        <PersonForm key={value.id} lens={l} />
       ))}
       <button type="button" onClick={() => append({ name: '', surname: '' })}>
         Add child
