@@ -28,7 +28,7 @@ export function useLens<TFieldValues extends FieldValues = FieldValues>(
   deps: DependencyList = [],
 ): Lens<TFieldValues> {
   return useMemo(() => {
-    const cache = new LensesStorage();
+    const cache = new LensesStorage(props.control);
     const lens = LensCore.create<TFieldValues>(props.control, cache);
 
     return lens;
