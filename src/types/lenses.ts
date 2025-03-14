@@ -260,7 +260,9 @@ export interface LensMap<T extends any[]> {
   map<R>(fields: T, mapper: (value: Lens<T[number]>, key: string, index: number, array: this) => R, keyName?: string): R[];
 }
 
-export interface ArrayLens<T extends any[]> extends LensMap<T>, LensFocus<T>, LensReflect<T>, LensJoin<T> {}
+export interface ArrayLens<T extends any[]> extends LensMap<T>, LensFocus<T>, LensJoin<T> {
+  reflect: <T2>(getter: (original: Lens<T[number]>) => [LensesMap<T2>]) => Lens<UnwrapLens<LensesMap<T2>>[]>;
+}
 export interface ObjectLens<T> extends LensFocus<T>, LensReflect<T>, LensJoin<T> {}
 export interface PrimitiveLens<T> extends LensReflect<T>, LensJoin<T> {}
 

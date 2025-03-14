@@ -11,7 +11,7 @@ test('lens can be created', () => {
   });
 
   expectTypeOf(result.current.lens).toEqualTypeOf<Lens<{ a: string }>>();
-  expect(result.current.lens.interop()).toEqual({ name: undefined, control: result.current.form.control });
+  expect(result.current.lens.interop()).toEqual({ name: undefined, control: result.current.form.control, lens: result.current.lens });
 });
 
 test('lenses are different when created with different forms', () => {
