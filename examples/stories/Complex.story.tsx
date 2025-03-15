@@ -68,8 +68,8 @@ function MoviesForm({ lens }: { lens: Lens<Movie[]> }) {
         <button onClick={() => append({ title: '', summary: '', actors: [] })}>Add Movie</button>
       </div>
 
-      {lens.map(fields, (l, key, index) => (
-        <div key={key}>
+      {lens.map(fields, (value, l, index) => (
+        <div key={value.id}>
           <button onClick={() => remove(index)}>Remove</button>
           <StringInput lens={l.focus('title')} label="Title" />
           <StringInput lens={l.focus('summary')} label="Summary" />
@@ -89,8 +89,8 @@ function ActorsForm({ lens }: { lens: Lens<Actor[]> }) {
       <div>
         <button onClick={() => append({ name: '', birthYear: 0 })}>Add Actor</button>
       </div>
-      {lens.map(fields, (l, key, index) => (
-        <div key={key}>
+      {lens.map(fields, (value, l, index) => (
+        <div key={value.id}>
           <button onClick={() => remove(index)}>Remove</button>
           <PersonForm lens={l} />
         </div>

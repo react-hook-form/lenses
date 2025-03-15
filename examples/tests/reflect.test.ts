@@ -79,7 +79,7 @@ test('reflect can work with array', () => {
 
   expectTypeOf(result.current.lens).toEqualTypeOf<Lens<{ another: string }[]>>();
 
-  const [one, two] = result.current.lens.map(result.current.arr.fields, (l) => l.focus('another').interop());
+  const [one, two] = result.current.lens.map(result.current.arr.fields, (_, l) => l.focus('another').interop());
 
   expect(one).toEqual({
     name: 'items.0.value',

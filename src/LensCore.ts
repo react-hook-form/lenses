@@ -105,16 +105,15 @@ export class LensCore {
 
   public map<R>(
     fields: Record<string, any>[],
-    mapper: (value: unknown, key: string, index: number, array: this) => R,
-    keyName = 'id',
+    mapper: (value: unknown, item: LensCore, index: number, array: unknown[], lens: this) => R,
   ): R[] {
     if (!this.settings.propPath) {
       throw new Error(`There is no prop name in this lens: ${this.settings.propPath}`);
     }
 
-    return fields.map((value, index) => {
-      const field = this.focus(index.toString());
-      const res = mapper(field, value[keyName], index, this);
+    return fields.map((value, index, array) => {
+      const item = this.focus(index.toString());
+      const res = mapper(value, item, index, array, this);
       return res;
     });
   }
