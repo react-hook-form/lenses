@@ -284,13 +284,13 @@ You can create lenses manually without `useLens` hook by utilizing the `LensCore
 ```tsx
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { createLensesCache, LensCore } from '@hookform/lenses';
+import { LensCore, LensesStorage } from '@hookform/lenses';
 
 function App() {
   const { control } = useForm<{ firstName: string; lastName: string }>();
 
   const lens = useMemo(() => {
-    const cache = createLensesCache();
+    const cache = new LensesStorage();
     return LensCore.create(control, cache);
   }, [control]);
 

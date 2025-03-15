@@ -1,7 +1,7 @@
 import { type Control, type FieldValues, get } from 'react-hook-form';
 
 import type { Lens } from './types/lenses';
-import type { LensesCache } from './utils';
+import type { LensesStorage } from './LensesStorage';
 
 interface Settings {
   lensesMap?: Record<string, LensCore> | [Record<string, LensCore>] | undefined;
@@ -12,9 +12,9 @@ interface Settings {
 export class LensCore {
   public settings: Settings;
   public control: Control;
-  public cache: LensesCache;
+  public cache?: LensesStorage | undefined;
 
-  private constructor(control: Control<any>, cache: LensesCache, settings: Settings = {}) {
+  private constructor(control: Control<any>, cache?: LensesStorage, settings: Settings = {}) {
     this.control = control;
     this.cache = cache;
     this.settings = settings;
@@ -22,7 +22,7 @@ export class LensCore {
 
   public static create<TFieldValues extends FieldValues = FieldValues>(
     control: Control<TFieldValues>,
-    cache: LensesCache,
+    cache?: LensesStorage,
   ): Lens<TFieldValues> {
     return new LensCore(control, cache) as unknown as Lens<TFieldValues>;
   }
@@ -40,15 +40,15 @@ export class LensCore {
           if (reflectedPropPath) {
             nestedPath = `${this.settings.propPath}.${reflectedPropPath}`;
 
-            if (!this.cache.primitives.has(nestedPath)) {
+            if (!this.cache?.has(nestedPath)) {
               const newLens = new LensCore(arrayReflectMapper.control, arrayReflectMapper.cache, {
                 ...arrayReflectMapper.settings,
                 propPath: nestedPath,
               });
-              this.cache.primitives.set(nestedPath, newLens);
+              this.cache?.set(newLens, nestedPath);
             }
 
-            const focusedLens = this.cache.primitives.get(nestedPath);
+            const focusedLens = this.cache?.get(nestedPath);
 
             if (!focusedLens) {
               throw new Error(`There is no focused lens: ${nestedPath}`);
@@ -65,16 +65,16 @@ export class LensCore {
       }
     }
 
-    if (!this.cache.primitives.has(nestedPath)) {
+    if (!this.cache?.has(nestedPath)) {
       const newLens = new LensCore(this.control, this.cache, {
         propPath: nestedPath,
         lensesMap: this.settings.lensesMap,
         restructureSourcePath: this.settings.restructureSourcePath,
       });
-      this.cache.primitives.set(nestedPath, newLens);
+      this.cache?.set(newLens, nestedPath);
     }
 
-    const focusedLens = this.cache.primitives.get(nestedPath);
+    const focusedLens = this.cache?.get(nestedPath);
 
     if (!focusedLens) {
       throw new Error(`There is no focused lens: ${nestedPath}`);
@@ -84,10 +84,10 @@ export class LensCore {
   }
 
   public reflect(getter: (original: LensCore) => Record<string, LensCore> | [Record<string, LensCore>]): LensCore {
-    const fromCache = this.cache.complex.get(getter);
+    const fromCache = this.cache?.get(this.settings.propPath ?? '', getter);
 
     if (fromCache) {
-      return fromCache.lens;
+      return fromCache;
     }
 
     const focusContext = getter(this);
@@ -98,16 +98,16 @@ export class LensCore {
       restructureSourcePath: this.settings.propPath,
     });
 
-    this.cache.complex.set(getter, { lens: newLens });
+    this.cache?.set(newLens, this.settings.propPath ?? '', getter);
 
     return newLens;
   }
 
   public join(another: LensCore, merger: (original: LensCore, another: LensCore) => Record<string, LensCore>): LensCore {
-    const fromCache = this.cache.complex.get(merger);
+    const fromCache = this.cache?.get(this.settings.propPath ?? '', merger);
 
     if (fromCache) {
-      return fromCache.lens;
+      return fromCache;
     }
 
     const focusContext = merger(this, another);
@@ -117,7 +117,7 @@ export class LensCore {
       restructureSourcePath: this.settings.propPath,
     });
 
-    this.cache.complex.set(merger, { lens: newLens });
+    this.cache?.set(newLens, this.settings.propPath ?? '', merger);
 
     return newLens;
   }
