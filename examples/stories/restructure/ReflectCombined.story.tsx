@@ -9,25 +9,22 @@ export default {
   title: 'Restructure',
 } satisfies Meta;
 
-export interface JoinFormData {
+export interface ReflectCombinedFormData {
   firstName: string;
   lastName: string;
 }
 
-export interface JoinProps {
-  onSubmit: SubmitHandler<JoinFormData>;
+export interface ReflectCombinedProps {
+  onSubmit: SubmitHandler<ReflectCombinedFormData>;
 }
 
-export function Join({ onSubmit = action('submit') }: JoinProps) {
-  const { handleSubmit, control } = useForm<JoinFormData>();
+export function ReflectCombined({ onSubmit = action('submit') }: ReflectCombinedProps) {
+  const { handleSubmit, control } = useForm<ReflectCombinedFormData>();
   const lens = useLens({ control });
-
-  const firstName = lens.focus('firstName');
-  const lastName = lens.focus('lastName');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <PersonForm lens={firstName.join(lastName, (firstNameLens, lastNameLens) => ({ name: firstNameLens, surname: lastNameLens }))} />
+      <PersonForm lens={lens.focus('firstName').reflect((firstNameLens) => ({ name: firstNameLens, surname: lens.focus('lastName') }))} />
 
       <div>
         <button id="submit">Submit</button>
