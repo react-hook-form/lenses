@@ -197,24 +197,8 @@ function Component({ lensA, lensB }: { lensA: Lens<{ firstName: string }>; lensB
   // ...
 }
 ```
+
 Keep in mind that is such case the passed to `reflect` function is longer pure.
-
-##### `join`
-
-Combines two lenses into one. You have to provide a merger function because in runtime it is not clear to which prop path of two lenses subsequent lens operations will be applied.
-
-```tsx
-function Card(props: { person: Lens<{ name: string }>; contact: Lens<{ phoneNumber: string }> }) {
-  return (
-    <SharedComponent
-      lens={props.person.join(props.contact, (person, contact) => ({
-        name: person.focus('name'),
-        phoneNumber: contact.focus('phoneNumber'),
-      }))}
-    />
-  );
-}
-```
 
 ##### `map` (Array Lenses)
 
