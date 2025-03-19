@@ -197,6 +197,7 @@ function Component({ lensA, lensB }: { lensA: Lens<{ firstName: string }>; lensB
   // ...
 }
 ```
+
 Keep in mind that is such case the passed to `reflect` function is longer pure.
 
 ##### `map` (Array Lenses)
