@@ -288,7 +288,7 @@ function App() {
   const { control } = useForm<{ firstName: string; lastName: string }>();
 
   const lens = useMemo(() => {
-    const cache = new LensesStorage();
+    const cache = new LensesStorage(control);
     return LensCore.create(control, cache);
   }, [control]);
 
