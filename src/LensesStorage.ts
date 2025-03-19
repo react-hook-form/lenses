@@ -1,3 +1,5 @@
+import type { Control, FieldValues } from 'react-hook-form';
+
 import type { LensCore } from './LensCore';
 
 export type LensesStorageComplexKey = (...args: any[]) => any;
@@ -9,11 +11,19 @@ export interface LensesStorageValue {
 
 export type LensCache = Map<string, LensesStorageValue>;
 
-export class LensesStorage {
+export class LensesStorage<TFieldValues extends FieldValues = FieldValues> {
   private cache: LensCache;
 
-  constructor() {
+  constructor(control: Control<TFieldValues>) {
     this.cache = new Map();
+
+    control?._subjects?.values?.subscribe?.({
+      next: () => {
+        control._names.unMount.forEach((name) => {
+          this.delete(name);
+        });
+      },
+    });
   }
 
   public get(propPath: string, complexKey?: LensesStorageComplexKey): LensCore | undefined {
