@@ -158,8 +158,23 @@ const arrayItemLens = lens.focus('array.0');
 Transforms the lens structure with type inference.
 It is useful when you want to create a new lens from existing one with different shape to pass it to a shared component.
 
+The first argument is a dictionary of lenses. The second argument is the original lens.
+
 ```tsx
-const contactLens = lens.reflect((l) => ({
+const contactLens = lens.reflect(({ profile }) => ({
+  name: profile.focus('contact.firstName'),
+  phoneNumber: profile.focus('contact.phone'),
+}));
+
+<SharedComponent lens={contactLens} />;
+
+function SharedComponent({ lens }: { lens: Lens<{ name: string; phoneNumber: string }> }) {
+  // ...
+}
+```
+
+```tsx
+const contactLens = lens.reflect((_, l) => ({
   name: l.focus('profile.contact.firstName'),
   phoneNumber: l.focus('profile.contact.phone'),
 }));
@@ -175,7 +190,7 @@ Also, you can restructure array lens:
 
 ```tsx
 function ArrayComponent({ lens }: { lens: Lens<{ value: string }[]> }) {
-  return <AnotherComponent lens={lens.reflect((l) => [{ data: l.focus('value') }])} />;
+  return <AnotherComponent lens={lens.reflect((_, l) => [{ data: l.focus('value') }])} />;
 }
 
 function AnotherComponent({ lens }: { lens: Lens<{ data: string }[]> }) {
@@ -189,7 +204,7 @@ In addition you can use `reflect` to merge two lenses into one.
 
 ```tsx
 function Component({ lensA, lensB }: { lensA: Lens<{ firstName: string }>; lensB: Lens<{ lastName: string }> }) {
-  const combined = lensA.reflect((l) => ({
+  const combined = lensA.reflect((_, l) => ({
     firstName: l.focus('firstName'),
     lastName: lensB.focus('lastName'),
   }));
@@ -199,6 +214,22 @@ function Component({ lensA, lensB }: { lensA: Lens<{ firstName: string }>; lensB
 ```
 
 Keep in mind that is such case the passed to `reflect` function is longer pure.
+
+You can use spread in reflect if you want to leave other properties as is. In runtime the first argument is just a proxy that calls `focus` on the original lens.
+
+```tsx
+function Component({ lens }: { lens: Lens<{ firstName: string; lastName: string; age: number }> }) {
+  return (
+    <PersonForm
+      lens={lens.reflect(({ firstName, lastName, ...rest }) => ({
+        ...rest,
+        name: firstName,
+        surname: lastName,
+      }))}
+    />
+  );
+}
+```
 
 ##### `map` (Array Lenses)
 
