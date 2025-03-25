@@ -30,9 +30,9 @@ export function Demo({ onSubmit = action('submit') }: DemoProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PersonForm
-        lens={lens.reflect((l) => ({
-          name: l.focus('firstName'),
-          surname: l.focus('lastName'),
+        lens={lens.reflect(({ firstName, lastName }) => ({
+          name: firstName,
+          surname: lastName,
         }))}
       />
       <NumberInput lens={lens.focus('age')} />

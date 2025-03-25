@@ -1,20 +1,17 @@
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Lens, useLens } from '@hookform/lenses';
 import { action } from '@storybook/addon-actions';
 import { Meta } from '@storybook/react';
 
 export default {
-  title: 'Quickstart',
+  title: 'Restructure',
 } satisfies Meta;
 
-export function Quickstart() {
+export function Spread() {
   const { handleSubmit, control } = useForm<{
     firstName: string;
     lastName: string;
-    children: {
-      name: string;
-      surname: string;
-    }[];
+    age: number;
   }>({});
 
   const lens = useLens({ control });
@@ -22,41 +19,31 @@ export function Quickstart() {
   return (
     <form onSubmit={handleSubmit(action('submit'))}>
       <PersonForm
-        lens={lens.reflect(({ firstName, lastName }) => ({
+        lens={lens.reflect(({ firstName, lastName, ...rest }) => ({
+          ...rest,
           name: firstName,
           surname: lastName,
         }))}
       />
-      <ChildForm lens={lens.focus('children')} />
       <input type="submit" />
     </form>
   );
 }
 
-function ChildForm({ lens }: { lens: Lens<{ name: string; surname: string }[]> }) {
-  const { fields, append } = useFieldArray(lens.interop());
-
-  return (
-    <>
-      <button type="button" onClick={() => append({ name: '', surname: '' })}>
-        Add child
-      </button>
-      {lens.map(fields, (value, l) => (
-        <PersonForm key={value.id} lens={l} />
-      ))}
-    </>
-  );
-}
-
-function PersonForm({ lens }: { lens: Lens<{ name: string; surname: string }> }) {
+function PersonForm({ lens }: { lens: Lens<{ name: string; surname: string; age: number }> }) {
   return (
     <div>
       <StringInput lens={lens.focus('name')} />
       <StringInput lens={lens.focus('surname')} />
+      <NumberInput lens={lens.focus('age')} />
     </div>
   );
 }
 
 function StringInput({ lens }: { lens: Lens<string> }) {
   return <input {...lens.interop((ctrl, name) => ctrl.register(name))} />;
+}
+
+function NumberInput({ lens }: { lens: Lens<number> }) {
+  return <input type="number" {...lens.interop((ctrl, name) => ctrl.register(name, { valueAsNumber: true }))} />;
 }

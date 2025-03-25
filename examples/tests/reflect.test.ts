@@ -11,18 +11,28 @@ test('reflect can create a new lens', () => {
     return lens;
   });
 
-  expectTypeOf(result.current.reflect((l) => ({ b: l.focus('a') }))).toEqualTypeOf<Lens<{ b: string }>>();
+  expectTypeOf(result.current.reflect((l) => ({ b: l.a }))).toEqualTypeOf<Lens<{ b: string }>>();
 });
 
-test('spread operator is not allowed for lenses', () => {
+test('spread operator is allowed for lenses in reflect', () => {
   const { result } = renderHook(() => {
-    const form = useForm<{ a: string }>();
+    const form = useForm<{ a: string; b: { c: number } }>();
     const lens = useLens({ control: form.control });
     return lens;
   });
 
-  // @ts-expect-error spread operator is not allowed for lenses
-  assertType(result.current.reflect((l) => ({ ...l })));
+  expectTypeOf(
+    result.current.reflect((l) => {
+      expectTypeOf(l).toEqualTypeOf<{
+        a: Lens<string>;
+        b: Lens<{
+          c: number;
+        }>;
+      }>();
+
+      return { ...l };
+    }),
+  ).toEqualTypeOf<Lens<{ a: string; b: { c: number } }>>();
 });
 
 test('reflect can create a new lens from a field array item', () => {
@@ -32,7 +42,7 @@ test('reflect can create a new lens from a field array item', () => {
     return lens;
   });
 
-  expectTypeOf(result.current.reflect((l) => ({ b: l.focus('a').focus('0') }))).toEqualTypeOf<Lens<{ b: string }>>();
+  expectTypeOf(result.current.reflect((l) => ({ b: l.a.focus('0') }))).toEqualTypeOf<Lens<{ b: string }>>();
 });
 
 test('non lens fields cannot returned from reflect', () => {
@@ -59,9 +69,7 @@ test('reflect can add props from another lens', () => {
     return lens;
   });
 
-  expectTypeOf(form1.current.reflect((l) => ({ c: l.focus('a'), d: form2.current.focus('b') }))).toEqualTypeOf<
-    Lens<{ c: string; d: number }>
-  >();
+  expectTypeOf(form1.current.reflect((l) => ({ c: l.a, d: form2.current.focus('b') }))).toEqualTypeOf<Lens<{ c: string; d: number }>>();
 });
 
 test('reflect can work with array', () => {
@@ -70,7 +78,7 @@ test('reflect can work with array', () => {
 
     const lens = useLens({ control: form.control })
       .focus('items')
-      .reflect((l) => [{ another: l.focus('value') }]);
+      .reflect((l) => [{ another: l.value }]);
 
     const arr = useFieldArray(lens.interop());
 

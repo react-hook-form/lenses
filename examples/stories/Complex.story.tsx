@@ -49,7 +49,9 @@ export function Complex({ onSubmit = action('submit') }: ComplexProps) {
       <StringInput lens={lens.focus('studio.location')} label="Studio Location" />
 
       <hr />
-      <PersonForm lens={lens.focus('studio.owner').reflect((l) => ({ name: l.focus('personName'), birthYear: l.focus('yearOfBirth') }))} />
+      <PersonForm
+        lens={lens.focus('studio.owner').reflect(({ personName, yearOfBirth }) => ({ name: personName, birthYear: yearOfBirth }))}
+      />
 
       <hr />
       <MoviesForm lens={lens.focus('movies')} />

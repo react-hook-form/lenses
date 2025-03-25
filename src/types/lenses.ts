@@ -1,6 +1,6 @@
 import type { Control, FieldValues, Path, PathValue } from 'react-hook-form';
 
-import type { LensesMap, UnwrapLens } from './helpers';
+import type { LensesMap, LensesValues, UnwrapLens } from './helpers';
 
 /**
  * This is a trick to allow `control` to have typed `Control<T>` type.
@@ -167,7 +167,9 @@ export interface LensReflect<T> {
    * }
    * ```
    */
-  reflect: <T2>(getter: (original: Lens<T>) => LensesMap<T2>) => Lens<UnwrapLens<LensesMap<T2>>>;
+  reflect: <T2>(
+    getter: (value: T extends FieldValues ? LensesValues<T> : never, lens: Lens<T>) => LensesMap<T2>,
+  ) => Lens<UnwrapLens<LensesMap<T2>>>;
 }
 
 export interface LensMap<T extends any[]> {
@@ -211,7 +213,7 @@ export interface LensMap<T extends any[]> {
 }
 
 export interface ArrayLens<T extends any[]> extends LensMap<T>, LensFocus<T> {
-  reflect: <T2>(getter: (original: Lens<T[number]>) => [LensesMap<T2>]) => Lens<UnwrapLens<LensesMap<T2>>[]>;
+  reflect: <T2>(getter: (value: LensesValues<T[number]>, lens: Lens<T[number]>) => [LensesMap<T2>]) => Lens<UnwrapLens<LensesMap<T2>>[]>;
 }
 export interface ObjectLens<T> extends LensFocus<T>, LensReflect<T> {}
 // Will leave primitive lense interface for future use
