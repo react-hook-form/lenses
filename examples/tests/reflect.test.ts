@@ -53,7 +53,7 @@ test('non lens fields cannot returned from reflect', () => {
   });
 
   // @ts-expect-error non lens fields cannot be returned from reflect
-  assertType(result.current.reflect((l) => ({ b: l.focus('a'), w: 'hello' })));
+  assertType(result.current.reflect((_, l) => ({ b: l.focus('a'), w: 'hello' })));
 });
 
 test('reflect can add props from another lens', () => {
