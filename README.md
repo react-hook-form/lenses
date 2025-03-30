@@ -241,7 +241,7 @@ import { useFieldArray } from '@hookform/lenses/rhf';
 function ContactsList({ lens }: { lens: Lens<Contact[]> }) {
   const { fields } = useFieldArray(lens.interop());
 
-  return lens.map(fields, (l, key) => <ContactForm key={key} lens={l} />);
+  return lens.map(fields, (value, l) => <ContactForm key={value.id} lens={l} />);
 }
 ```
 
@@ -319,7 +319,7 @@ function App() {
   const { control } = useForm<{ firstName: string; lastName: string }>();
 
   const lens = useMemo(() => {
-    const cache = new LensesStorage();
+    const cache = new LensesStorage(control);
     return LensCore.create(control, cache);
   }, [control]);
 
