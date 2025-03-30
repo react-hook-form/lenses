@@ -1,8 +1,16 @@
+import type { FieldValues } from 'react-hook-form';
+
 import type { Lens, NonObjectFieldShim } from './lenses';
 
 export type LensesMap<T> = {
   [key in keyof T]: Lens<T[key]>;
 };
+
+export type LensesValues<T> = T extends FieldValues
+  ? {
+      [key in keyof T]: Lens<T[key]>;
+    }
+  : Lens<T>;
 
 export type LensesDeepMap<T> = {
   [key: string]: Lens<T> | LensesDeepMap<T>;

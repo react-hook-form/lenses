@@ -1,5 +1,6 @@
 import { type Control, type FieldValues, get } from 'react-hook-form';
 
+import type { LensesValues } from './types/helpers';
 import type { Lens } from './types/lenses';
 import type { LensesStorage } from './LensesStorage';
 
@@ -10,14 +11,14 @@ interface Settings {
 }
 
 export class LensCore {
-  public settings: Settings;
   public control: Control;
+  public settings: Settings;
   public cache?: LensesStorage | undefined;
 
   private constructor(control: Control<any>, cache?: LensesStorage, settings: Settings = {}) {
     this.control = control;
-    this.cache = cache;
     this.settings = settings;
+    this.cache = cache;
   }
 
   public static create<TFieldValues extends FieldValues = FieldValues>(
@@ -83,14 +84,27 @@ export class LensCore {
     return focusedLens;
   }
 
-  public reflect(getter: (original: LensCore) => Record<string, LensCore> | [Record<string, LensCore>]): LensCore {
+  public reflect(getter: (value: LensesValues<any>, lens: LensCore) => Record<string, LensCore> | [Record<string, LensCore>]): LensCore {
     const fromCache = this.cache?.get(this.settings.propPath ?? '', getter);
 
     if (fromCache) {
       return fromCache;
     }
 
-    const focusContext = getter(this);
+    const proxy = new Proxy(
+      {},
+      {
+        get: (target, prop) => {
+          if (typeof prop === 'string') {
+            return this.focus(prop);
+          }
+
+          return target;
+        },
+      },
+    );
+
+    const focusContext = getter(proxy, this);
 
     const newLens = new LensCore(this.control, this.cache, {
       lensesMap: focusContext,

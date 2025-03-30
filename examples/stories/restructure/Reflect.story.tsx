@@ -26,9 +26,9 @@ export function Reflect({ onSubmit = action('submit') }: ReflectProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PersonForm
-        lens={lens.reflect((l) => ({
-          name: l.focus('firstName'),
-          surname: l.focus('lastName.value'),
+        lens={lens.reflect(({ firstName, lastName }) => ({
+          name: firstName,
+          surname: lastName.focus('value'),
         }))}
       />
 
@@ -73,7 +73,7 @@ export function ArrayReflect({ onSubmit = action('submit') }: ArrayReflectProps)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Items lens={lens.focus('items').reflect((l) => [{ data: l.focus('value').focus('inside') }])} />
+      <Items lens={lens.focus('items').reflect((l) => [{ data: l.value.focus('inside') }])} />
       <div>
         <button type="submit">submit</button>
       </div>

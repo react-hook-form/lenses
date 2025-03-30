@@ -18,7 +18,7 @@ test('lens can cache by function with useCallback', () => {
     const form = useForm<{ a: string }>();
     const lens = useLens({ control: form.control });
 
-    const reflectedLens = lens.reflect(useCallback((l) => ({ b: l.focus('a') }), [lens]));
+    const reflectedLens = lens.reflect(useCallback((l) => ({ b: l.a }), [lens]));
     return { reflectedLens };
   });
 
@@ -34,7 +34,7 @@ test('lens cannot be cache by function without useCallback', () => {
     const form = useForm<{ a: string }>();
     const lens = useLens({ control: form.control });
 
-    const reflectedLens = lens.reflect((l) => ({ b: l.focus('a') }));
+    const reflectedLens = lens.reflect((l) => ({ b: l.a }));
     return { reflectedLens };
   });
 

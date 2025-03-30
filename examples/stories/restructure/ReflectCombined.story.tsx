@@ -24,7 +24,12 @@ export function ReflectCombined({ onSubmit = action('submit') }: ReflectCombined
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <PersonForm lens={lens.focus('firstName').reflect((firstNameLens) => ({ name: firstNameLens, surname: lens.focus('lastName') }))} />
+      <PersonForm
+        lens={lens.focus('firstName').reflect((_, firstName) => ({
+          name: firstName.reflect((_, l) => ({ nestedName: l })).focus('nestedName'),
+          surname: lens.focus('lastName'),
+        }))}
+      />
 
       <div>
         <button id="submit">Submit</button>
