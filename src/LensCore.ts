@@ -1,21 +1,28 @@
-import { type Control, type FieldValues, get } from 'react-hook-form';
+import { type Control, type FieldValues, get, set } from 'react-hook-form';
 
 import type { LensesStorage } from './LensesStorage';
 import type { Lens } from './types';
+
+export interface LensCoreInteropBinding<T extends FieldValues> {
+  control: Control<T>;
+  name: string | undefined;
+  getTransformer?: (value: unknown) => unknown;
+  setTransformer?: (value: unknown) => unknown;
+}
 
 export class LensCore<T extends FieldValues> {
   public control: Control<T>;
   public path: string;
   public cache?: LensesStorage | undefined;
-  public isArrayItemReflection: boolean;
 
+  private isArrayItemReflection?: boolean;
   private override?: Record<string, LensCore<T>> | [Record<string, LensCore<T>>];
+  private interopCache?: LensCoreInteropBinding<T>;
 
-  constructor(control: Control<T>, path: string, cache?: LensesStorage, isArrayItemReflection = false) {
+  constructor(control: Control<T>, path: string, cache?: LensesStorage | undefined) {
     this.control = control;
     this.path = path;
     this.cache = cache;
-    this.isArrayItemReflection = isArrayItemReflection;
   }
 
   public static create<TFieldValues extends FieldValues = FieldValues>(
@@ -31,7 +38,8 @@ export class LensCore<T extends FieldValues> {
 
     if (Array.isArray(this.override)) {
       const [template] = this.override;
-      const result = new LensCore(this.control, nestedPath, this.cache, true);
+      const result = new LensCore(this.control, nestedPath, this.cache);
+      result.isArrayItemReflection = true;
       result.override = template;
 
       return result;
@@ -74,7 +82,7 @@ export class LensCore<T extends FieldValues> {
     const override = getter(dictionary, template);
 
     if (Array.isArray(override)) {
-      const result = new LensCore(this.control, this.path, this.cache, this.isArrayItemReflection);
+      const result = new LensCore(this.control, this.path, this.cache);
       result.override = override;
       return result;
     } else {
@@ -95,11 +103,63 @@ export class LensCore<T extends FieldValues> {
     });
   }
 
-  public interop(cb?: (control: Control<T>, name: string | undefined, lens: LensCore<T>) => any): {
-    control: Control<T>;
-    name: string | undefined;
-    lens: LensCore<T>;
-  } {
-    return cb ? cb(this.control, this.path, this) : { control: this.control, name: this.path, lens: this };
+  public interop(cb?: (control: Control<T>, name: string | undefined) => any): LensCoreInteropBinding<T> | undefined {
+    if (cb) {
+      return cb(this.control, this.path);
+    }
+
+    this.interopCache ??= {
+      control: this.control,
+      name: this.path,
+      getTransformer: this.getTransformer.bind(this),
+      setTransformer: this.setTransformer.bind(this),
+    };
+
+    return this.interopCache;
+  }
+
+  private getTransformer(value: unknown): unknown {
+    const [template] = Array.isArray(this.override) ? this.override : [this.override];
+
+    if (!value || !template) {
+      return value;
+    }
+
+    const newValue = {} as typeof value;
+
+    Object.entries(template).forEach(([key, valueTemplate]) => {
+      const restructuredLens = valueTemplate;
+
+      if (!restructuredLens) {
+        return;
+      }
+
+      const v = get(value, restructuredLens.path);
+      set(newValue, key, v);
+    });
+
+    return newValue;
+  }
+
+  private setTransformer(value: unknown): unknown {
+    const [template] = Array.isArray(this.override) ? this.override : [this.override];
+
+    if (!value || !template) {
+      return value;
+    }
+
+    const newValue = {} as typeof value;
+
+    Object.entries(value).forEach(([key, value]) => {
+      const restructuredLens = template[key];
+
+      if (!restructuredLens) {
+        return;
+      }
+
+      set(newValue, restructuredLens.path, value);
+    });
+
+    return newValue;
   }
 }

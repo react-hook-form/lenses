@@ -1,21 +1,26 @@
+import { useMemo } from 'react';
 import {
   type FieldArray,
   type FieldArrayPath,
+  type FieldArrayWithId,
   type FieldValues,
-  set,
   useFieldArray as useFieldArrayOriginal,
   type UseFieldArrayProps as UseFieldArrayPropsOriginal,
   type UseFieldArrayReturn,
 } from 'react-hook-form';
 
-import type { LensCore } from '../LensCore';
-
-interface UseFieldArrayProps<
+export interface UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 > extends UseFieldArrayPropsOriginal<TFieldValues, TFieldArrayName, TKeyName> {
-  lens?: LensCore;
+  getTransformer?: <R extends TFieldValues, N extends FieldArrayPath<R>>(
+    value: FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>,
+  ) => FieldArrayWithId<R, N, TKeyName>;
+
+  setTransformer?: <R extends FieldValues, N extends FieldArrayPath<R>>(
+    value: FieldArray<R, N>,
+  ) => FieldArrayWithId<TFieldValues, TFieldArrayName, TKeyName>;
 }
 
 export function useFieldArray<
@@ -23,46 +28,59 @@ export function useFieldArray<
   TFieldArrayName extends FieldArrayPath<TFieldValues> = FieldArrayPath<TFieldValues>,
   TKeyName extends string = 'id',
 >(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
-  const result = useFieldArrayOriginal(props);
-
-  const transformOnSet = (value: FieldArray<TFieldValues, TFieldArrayName>) => {
-    if (!props.lens || !props.lens.settings.lensesMap || !value) {
-      return value;
+  const original = useFieldArrayOriginal(props);
+  const newFields = useMemo(() => {
+    if (!props.getTransformer) {
+      return original.fields;
     }
 
-    const newValue = {} as typeof value;
-
-    Object.entries(value || {}).forEach(([key, value]) => {
-      // @ts-expect-error temporal workaround for array lense reflection
-      const restructuredLens = props.lens.settings.lensesMap?.[0]?.[key];
-      const newKey = restructuredLens?.settings.propPath?.slice(`${props.lens?.settings.restructureSourcePath}.`.length);
-      set(newValue, newKey, value);
-    });
-
-    return newValue;
-  };
+    return original.fields.map(props.getTransformer);
+  }, [original.fields, props.getTransformer]);
 
   return {
-    ...result,
+    fields: newFields,
+    move: original.move,
+    remove: original.remove,
+    swap: original.swap,
     prepend: (value, options) => {
-      const newValue = Array.isArray(value) ? value.map(transformOnSet) : transformOnSet(value);
-      result.prepend(newValue, options);
+      if (!props.setTransformer) {
+        return original.prepend(value, options);
+      }
+
+      const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);
+      original.prepend(newValue, options);
     },
     append: (value, options) => {
-      const newValue = Array.isArray(value) ? value.map(transformOnSet) : transformOnSet(value);
-      result.append(newValue, options);
+      if (!props.setTransformer) {
+        return original.prepend(value, options);
+      }
+
+      const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);
+      original.append(newValue, options);
     },
     insert: (index, value, options) => {
-      const newValue = Array.isArray(value) ? value.map(transformOnSet) : transformOnSet(value);
-      result.insert(index, newValue, options);
+      if (!props.setTransformer) {
+        return original.insert(index, value, options);
+      }
+
+      const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);
+      original.insert(index, newValue, options);
     },
     update: (index, value) => {
-      const newValue = transformOnSet(value);
-      result.update(index, newValue);
+      if (!props.setTransformer) {
+        return original.update(index, value);
+      }
+
+      const newValue = props.setTransformer(value);
+      original.update(index, newValue);
     },
     replace: (value) => {
-      const newValue = Array.isArray(value) ? value.map(transformOnSet) : transformOnSet(value);
-      result.replace(newValue);
+      if (!props.setTransformer) {
+        return original.replace(value);
+      }
+
+      const newValue = props.setTransformer(value);
+      original.replace(newValue);
     },
   };
 }
