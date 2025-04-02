@@ -16,5 +16,6 @@ export interface LensInteropFunction<T extends FieldValues, Name, R> {
 }
 
 export interface LensInterop<T> {
+  interop(): LensInteropBinding<HookFormControlShim<T>, ShimKeyName>;
   interop<R>(callback: LensInteropFunction<HookFormControlShim<T>, ShimKeyName, R>): R;
 }

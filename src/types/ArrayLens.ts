@@ -7,8 +7,8 @@ export interface ArrayLensGetter<T, R> {
   (dictionary: LensesDictionary<T>, lens: Lens<T>): [LensesGetter<R>];
 }
 
-export interface ArrayLensMapper<T, R> {
-  (value: T, lens: Lens<T>, index: number, array: T[], origin: this): R;
+export interface ArrayLensMapper<T, L, R> {
+  (value: T, lens: Lens<L>, index: number, array: T[], origin: this): R;
 }
 
 export interface LensInteropTransformerBinding<
@@ -29,7 +29,7 @@ export interface ArrayLens<T extends any[]> {
   focus<P extends Path<T>>(path: P): Lens<PathValue<T, P>>;
   focus<P extends number>(path: P): Lens<T[P]>;
   reflect<R>(getter: ArrayLensGetter<T[number], R>): Lens<UnwrapLens<R>[]>;
-  map<F extends T, R>(fields: F, mapper: ArrayLensMapper<F[number], R>): R[];
+  map<F extends T, R>(fields: F, mapper: ArrayLensMapper<F[number], T[number], R>): R[];
   interop(): LensInteropTransformerBinding<
     HookFormControlShim<T>,
     ShimKeyName extends FieldArrayPath<HookFormControlShim<T>> ? ShimKeyName : never

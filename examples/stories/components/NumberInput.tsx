@@ -1,9 +1,9 @@
 import { RegisterOptions } from 'react-hook-form';
-import { Lens, NonObjectFieldShim } from '@hookform/lenses';
+import { HookFormControlShim, Lens } from '@hookform/lenses';
 
 export interface NumberInputProps
   extends Omit<
-    RegisterOptions<NonObjectFieldShim<number>>,
+    RegisterOptions<HookFormControlShim<number>>,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs' | 'onBlur' | 'onChange' | 'value' | 'pattern'
   > {
   label: string;

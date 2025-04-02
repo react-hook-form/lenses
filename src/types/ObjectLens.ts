@@ -1,6 +1,5 @@
 import type { Path, PathValue } from 'react-hook-form';
 
-import type { HookFormControlShim, LensInteropBinding, ShimKeyName } from './Interop';
 import type { Lens, LensesDictionary, LensesGetter, UnwrapLens } from './Lens';
 
 export interface ObjectLensGetter<T, R> {
@@ -10,5 +9,4 @@ export interface ObjectLensGetter<T, R> {
 export interface ObjectLens<T> {
   focus<P extends Path<T>>(path: P): Lens<PathValue<T, P>>;
   reflect<R>(getter: ObjectLensGetter<T, R>): Lens<UnwrapLens<R>>;
-  interop(): LensInteropBinding<HookFormControlShim<T>, ShimKeyName>;
 }

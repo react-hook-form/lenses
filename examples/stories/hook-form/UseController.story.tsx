@@ -1,5 +1,5 @@
 import { RegisterOptions, SubmitErrorHandler, SubmitHandler, useController, useForm } from 'react-hook-form';
-import { Lens, NonObjectFieldShim, useLens } from '@hookform/lenses';
+import { Lens, HookFormControlShim, useLens } from '@hookform/lenses';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 
@@ -47,7 +47,7 @@ function StringInput({ lens, placeholder }: StringInputProps) {
 interface PasswordInputProps {
   lens: Lens<string>;
   placeholder?: string;
-  rules?: RegisterOptions<NonObjectFieldShim<string>>;
+  rules?: RegisterOptions<HookFormControlShim<string>>;
 }
 
 function PasswordInput({ lens, rules = {}, placeholder }: PasswordInputProps) {

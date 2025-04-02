@@ -88,6 +88,7 @@ function Items({ lens }: { lens: Lens<{ data: string }[]> }) {
     <div>
       {lens.map(fields, (value, l) => (
         <div key={value.id}>
+          <div>Data: {value.data}</div>
           <StringInput label="Value" lens={l.focus('data')} />
         </div>
       ))}
