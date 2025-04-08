@@ -11,6 +11,9 @@ export interface LensesStorageValue<T extends FieldValues> {
 
 export type LensCache<T extends FieldValues> = Map<string, LensesStorageValue<T>>;
 
+/**
+ * Cache storage for lenses.
+ */
 export class LensesStorage<T extends FieldValues> {
   private cache: LensCache<T>;
 

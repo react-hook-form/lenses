@@ -9,6 +9,20 @@ export interface UseLensProps<TFieldValues extends FieldValues = FieldValues> {
   control: Control<TFieldValues>;
 }
 
+/**
+ * Creates lens from react-hook-form control.
+ *
+ * @example
+ * ```tsx
+ * function App() {
+ *   const { control } = useForm<{
+ *     firstName: string;
+ *   }>();
+ *
+ *   const lens = useLens({ control });
+ * }
+ * ```
+ */
 export function useLens<TFieldValues extends FieldValues = FieldValues>(
   props: UseLensProps<TFieldValues>,
   deps: DependencyList = [],

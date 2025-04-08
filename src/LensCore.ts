@@ -10,6 +10,9 @@ export interface LensCoreInteropBinding<T extends FieldValues> {
   setTransformer?: (value: unknown) => unknown;
 }
 
+/**
+ * Runtime lens implementation.
+ */
 export class LensCore<T extends FieldValues> {
   public control: Control<T>;
   public path: string;
