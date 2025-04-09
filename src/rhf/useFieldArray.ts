@@ -52,7 +52,7 @@ export function useFieldArray<
     },
     append: (value, options) => {
       if (!props.setTransformer) {
-        return original.prepend(value, options);
+        return original.append(value, options);
       }
 
       const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);

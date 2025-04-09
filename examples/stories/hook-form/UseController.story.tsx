@@ -1,5 +1,5 @@
 import { RegisterOptions, SubmitErrorHandler, SubmitHandler, useController, useForm } from 'react-hook-form';
-import { Lens, HookFormControlShim, useLens } from '@hookform/lenses';
+import { HookFormControlShim, Lens, useLens } from '@hookform/lenses';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 
