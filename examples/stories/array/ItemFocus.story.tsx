@@ -1,4 +1,4 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { type SubmitHandler, useForm } from 'react-hook-form';
 import { useLens } from '@hookform/lenses';
 import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';

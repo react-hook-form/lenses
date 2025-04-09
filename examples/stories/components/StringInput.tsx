@@ -1,5 +1,5 @@
-import { RegisterOptions } from 'react-hook-form';
-import { Lens, HookFormControlShim } from '@hookform/lenses';
+import { type RegisterOptions } from 'react-hook-form';
+import { type HookFormControlShim, type Lens } from '@hookform/lenses';
 
 export interface StringInputProps
   extends Omit<

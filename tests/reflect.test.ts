@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { Lens, useLens } from '@hookform/lenses';
+import { type Lens, useLens } from '@hookform/lenses';
 import { useFieldArray } from '@hookform/lenses/rhf';
 import { renderHook } from '@testing-library/react';
 import { expectTypeOf } from 'vitest';

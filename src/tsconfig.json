@@ -1,25 +1,19 @@
 {
-  "extends": "./src/tsconfig.json",
   "compilerOptions": {
     "target": "ES2018",
     "lib": ["ESNext"],
     "jsx": "react-jsx",
     "module": "ESNext",
     "rootDir": ".",
-    "baseUrl": "./src",
-    "paths": {
-      "@hookform/lenses": ["../src"],
-      "@hookform/lenses/rhf": ["../src/rhf"]
-    },
-    "types": ["vitest/globals"],
+    "baseUrl": ".",
     "moduleResolution": "bundler",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "noEmit": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "isolatedDeclarations": false,
+    "isolatedDeclarations": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -44,6 +38,5 @@
     "allowUnreachableCode": true,
     "skipLibCheck": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "./src"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

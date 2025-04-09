@@ -1,5 +1,5 @@
-import { Control, useController, useForm } from 'react-hook-form';
-import { HookFormControlShim, ShimKeyName, useLens } from '@hookform/lenses';
+import { type Control, useController, useForm } from 'react-hook-form';
+import { type HookFormControlShim, type ShimKeyName, useLens } from '@hookform/lenses';
 import { renderHook } from '@testing-library/react';
 import { expectTypeOf } from 'vitest';
 

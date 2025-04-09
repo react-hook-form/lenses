@@ -1,8 +1,8 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { Lens, useLens } from '@hookform/lenses';
+import { type SubmitHandler, useForm } from 'react-hook-form';
+import { type Lens, useLens } from '@hookform/lenses';
 import { useFieldArray } from '@hookform/lenses/rhf';
 import { action } from '@storybook/addon-actions';
-import { Meta } from '@storybook/react';
+import { type Meta } from '@storybook/react';
 
 import { NumberInput, StringInput } from './components';
 

@@ -1,4 +1,4 @@
-import { Lens, UnwrapLens } from '@hookform/lenses';
+import type { Lens, UnwrapLens } from '@hookform/lenses';
 import { expectTypeOf } from 'vitest';
 
 test('lens unwraps to the original type', () => {
