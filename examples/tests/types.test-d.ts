@@ -36,3 +36,25 @@ test('unwrap can handle nested lenses', () => {
     };
   }>();
 });
+
+test('lens can handle optional fields', () => {
+  function stringOnly(props: { lens: Lens<string> }) {
+    return props;
+  }
+
+  function stringOrUndefined(props: { lens: Lens<string | undefined> }) {
+    return props;
+  }
+
+  const lens = {} as Lens<{ value: string; valueOrUndefined?: string }>;
+
+  const value = lens.focus('value');
+  const valueOrUndefined = lens.focus('valueOrUndefined');
+
+  expectTypeOf<UnwrapLens<typeof value>>().toEqualTypeOf<string>();
+  expectTypeOf<UnwrapLens<typeof valueOrUndefined>>().toEqualTypeOf<string | undefined>();
+
+  stringOnly({ lens: value });
+  stringOrUndefined({ lens: value });
+  stringOrUndefined({ lens: valueOrUndefined });
+});
