@@ -1,19 +1,28 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import react from '@vitejs/plugin-react';
+import { mergeConfig } from 'vite';
 import checker from 'vite-plugin-checker';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 const config: StorybookConfig = {
   stories: ['../examples/**/*.story.@(ts|tsx)', '../examples/**/*.stories.@(ts|tsx)'],
-  addons: ['@storybook/addon-essentials', '@storybook/addon-onboarding', '@storybook/experimental-addon-test'],
+  addons: ['@storybook/addon-essentials', '@storybook/experimental-addon-test'],
   framework: {
     name: '@storybook/react-vite',
-    options: {},
+    options: {
+      builder: { viteConfigPath: './vite.config.ts' },
+    },
   },
-  async viteFinal(config) {
-    const { mergeConfig } = await import('vite');
 
+  viteFinal(config) {
     return mergeConfig(config, {
-      plugins: [checker({ typescript: true, overlay: false }), tsconfigPaths()],
+      plugins: [
+        react({
+          babel: {
+            plugins: ['babel-plugin-react-compiler'],
+          },
+        }),
+        checker({ typescript: true, overlay: false }),
+      ],
     });
   },
 };

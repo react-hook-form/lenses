@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "lib": ["ESNext"],
+    "lib": ["ES2018"],
     "jsx": "react-jsx",
-    "module": "ESNext",
+    "module": "ES2015",
     "rootDir": ".",
     "baseUrl": ".",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -14,6 +14,7 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "isolatedDeclarations": true,
+    "erasableSyntaxOnly": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

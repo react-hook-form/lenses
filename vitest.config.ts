@@ -5,7 +5,6 @@ import { defineConfig } from 'vitest/config';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// More info at: https://storybook.js.org/docs/writing-tests/test-addon
 export default defineConfig({
   test: {
     reporters: 'verbose',
@@ -19,7 +18,7 @@ export default defineConfig({
         extends: 'vite.config.ts',
         test: {
           name: 'unit',
-          typecheck: { enabled: true },
+          typecheck: { enabled: true, tsconfig: path.resolve(dirname, 'src/tsconfig.json') },
           globals: true,
           environment: 'jsdom',
           setupFiles: ['./vitest-unit.setup.ts'],
@@ -37,7 +36,10 @@ export default defineConfig({
         ],
         test: {
           name: 'e2e',
+          typecheck: { enabled: true, tsconfig: path.resolve(dirname, 'tsconfig.json') },
           setupFiles: ['./vitest-e2e.setup.ts'],
+          clearMocks: true,
+          restoreMocks: true,
           browser: {
             enabled: true,
             headless: true,
