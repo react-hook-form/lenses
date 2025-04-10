@@ -51,22 +51,18 @@
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css,md}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "bun lint --fix",
-    "test": "vitest watch",
-    "test:run": "vitest run --coverage",
+    "test-storybook": "vitest --project=e2e",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test-storybook": "vitest --project=storybook"
+    "test": "vitest watch",
+    "test:run": "vitest run --coverage"
   },
-  "workspaces": [
-    "examples"
-  ],
   "peerDependencies": {
     "react": "^16.8.0 || ^17 || ^18 || ^19",
     "react-hook-form": "^7.0.0"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.12",
-    "@storybook/addon-onboarding": "^8.6.12",
     "@storybook/blocks": "^8.6.12",
     "@storybook/experimental-addon-test": "^8.6.12",
     "@storybook/react": "^8.6.12",
@@ -103,15 +99,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "bun run lint:fix",
-      "bun run prettier:fix"
-    ],
-    "*.{md,json,yml}": [
-      "prettier --write"
-    ]
   },
   "engines": {
     "bun": ">=1.2"

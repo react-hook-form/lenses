@@ -8,26 +8,11 @@ const config: UserConfig = defineConfig({
   plugins: [
     react({
       babel: {
-        // plugins: ['babel-plugin-react-compiler'],
+        plugins: ['babel-plugin-react-compiler'],
       },
     }),
     tsconfigPaths(),
   ],
-  test: {
-    typecheck: { enabled: true },
-    reporters: 'verbose',
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
-    include: ['tests/**/*.test.+(ts|tsx)'],
-    clearMocks: true,
-    restoreMocks: true,
-    coverage: {
-      allowExternal: true,
-      provider: 'v8',
-      reporter: ['text', 'html'],
-    },
-  },
 });
 
 export default config;

@@ -44,6 +44,5 @@
     "allowUnreachableCode": true,
     "skipLibCheck": true
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "./src"]
+  "include": ["**/*.ts", "**/*.tsx"]
 }
