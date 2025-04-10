@@ -12,7 +12,7 @@ export default defineConfig({
       allowExternal: true,
       provider: 'v8',
       reporter: ['text', 'html'],
-      all: false,
+      include: [path.resolve(dirname, 'src')],
     },
     workspace: [
       {
