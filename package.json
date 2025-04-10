@@ -1,20 +1,7 @@
 {
   "name": "@hookform/lenses",
-  "description": "Type-safe lenses for React Hook Form that enable precise control over nested form state. Build reusable form components with composable operations, array handling, and full TypeScript support.",
   "version": "0.0.0-semantically-released",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/react-hook-form/lenses.git"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/react-hook-form/lenses/issues"
-  },
-  "homepage": "https://github.com/react-hook-form/lenses",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "sideEffects": false,
+  "description": "Type-safe lenses for React Hook Form that enable precise control over nested form state. Build reusable form components with composable operations, array handling, and full TypeScript support.",
   "keywords": [
     "react",
     "react-hook-form",
@@ -29,9 +16,16 @@
     "form-management",
     "react-components"
   ],
-  "files": [
-    "dist"
-  ],
+  "homepage": "https://github.com/react-hook-form/lenses",
+  "bugs": {
+    "url": "https://github.com/react-hook-form/lenses/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react-hook-form/lenses.git"
+  },
+  "license": "MIT",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -46,16 +40,22 @@
       "require": "./dist/rhf/index.cjs"
     }
   },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
-    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{js,ts,tsx,css,md}\"",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "bun lint --fix",
-    "test-storybook": "vitest --project=e2e",
+    "prettier": "prettier --config .prettierrc \"**/*.{js,ts,tsx,css,md}\"",
+    "prettier:fix": "bun lint --write",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
     "test": "vitest watch",
-    "test:run": "vitest run --coverage"
+    "test:e2e": "vitest run --project=e2e --coverage",
+    "test:unit": "vitest run --project=unit --coverage"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17 || ^18 || ^19",
@@ -97,10 +97,10 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.7"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "engines": {
     "bun": ">=1.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

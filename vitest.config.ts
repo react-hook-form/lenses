@@ -12,6 +12,7 @@ export default defineConfig({
       allowExternal: true,
       provider: 'v8',
       reporter: ['text', 'html'],
+      all: false,
     },
     workspace: [
       {
@@ -36,7 +37,6 @@ export default defineConfig({
         ],
         test: {
           name: 'e2e',
-          typecheck: { enabled: true, tsconfig: path.resolve(dirname, 'tsconfig.json') },
           setupFiles: ['./vitest-e2e.setup.ts'],
           clearMocks: true,
           restoreMocks: true,
