@@ -1,102 +1,104 @@
-import { type Control, type FieldValues, get } from 'react-hook-form';
+import { type Control, type FieldValues, get, set } from 'react-hook-form';
 
-import type { LensesValues } from './types/helpers';
-import type { Lens } from './types/lenses';
 import type { LensesStorage } from './LensesStorage';
+import type { Lens } from './types';
 
-interface Settings {
-  lensesMap?: Record<string, LensCore> | [Record<string, LensCore>] | undefined;
-  propPath?: string | undefined;
-  restructureSourcePath?: string | undefined;
+export interface LensCoreInteropBinding<T extends FieldValues> {
+  control: Control<T>;
+  name: string | undefined;
+  getTransformer?: (value: unknown) => unknown;
+  setTransformer?: (value: unknown) => unknown;
 }
 
-export class LensCore {
-  public control: Control;
-  public settings: Settings;
-  public cache?: LensesStorage | undefined;
+/**
+ * Runtime lens implementation.
+ */
+export class LensCore<T extends FieldValues> {
+  public control: Control<T>;
+  public path: string;
+  public cache?: LensesStorage<T> | undefined;
 
-  private constructor(control: Control<any>, cache?: LensesStorage, settings: Settings = {}) {
+  private isArrayItemReflection?: boolean;
+  private override?: Record<string, LensCore<T>> | [Record<string, LensCore<T>>];
+  private interopCache?: LensCoreInteropBinding<T>;
+
+  constructor(control: Control<T>, path: string, cache?: LensesStorage<T> | undefined) {
     this.control = control;
-    this.settings = settings;
+    this.path = path;
     this.cache = cache;
   }
 
   public static create<TFieldValues extends FieldValues = FieldValues>(
     control: Control<TFieldValues>,
-    cache?: LensesStorage,
+    cache?: LensesStorage<TFieldValues>,
   ): Lens<TFieldValues> {
-    return new LensCore(control, cache) as unknown as Lens<TFieldValues>;
+    return new LensCore(control, '', cache) as unknown as Lens<TFieldValues>;
   }
 
-  public focus(propPath: string): LensCore {
-    let nestedPath = this.settings.propPath === undefined ? propPath : `${this.settings.propPath}.${propPath}`;
+  public focus(prop: string | number): LensCore<T> {
+    const propString = prop.toString();
+    const nestedPath = this.path ? `${this.path}.${propString}` : propString;
 
-    if (this.settings.lensesMap) {
-      if (Array.isArray(this.settings.lensesMap)) {
-        const arrayReflectMapper: LensCore | undefined = get(this.settings.lensesMap[0], propPath);
-
-        if (arrayReflectMapper) {
-          const reflectedPropPath = arrayReflectMapper.settings.propPath?.slice(`${this.settings.restructureSourcePath}.`.length);
-
-          if (reflectedPropPath) {
-            nestedPath = `${this.settings.propPath}.${reflectedPropPath}`;
-
-            if (!this.cache?.has(nestedPath)) {
-              const newLens = new LensCore(arrayReflectMapper.control, arrayReflectMapper.cache, {
-                ...arrayReflectMapper.settings,
-                propPath: nestedPath,
-              });
-              this.cache?.set(newLens, nestedPath);
-            }
-
-            const focusedLens = this.cache?.get(nestedPath);
-
-            if (!focusedLens) {
-              throw new Error(`There is no focused lens: ${nestedPath}`);
-            }
-
-            return focusedLens;
-          }
-        }
-      } else {
-        const result = get(this.settings.lensesMap, propPath);
-        if (result) {
-          return result;
-        }
-      }
-    }
-
-    if (!this.cache?.has(nestedPath)) {
-      const newLens = new LensCore(this.control, this.cache, {
-        propPath: nestedPath,
-        lensesMap: this.settings.lensesMap,
-        restructureSourcePath: this.settings.restructureSourcePath,
-      });
-      this.cache?.set(newLens, nestedPath);
-    }
-
-    const focusedLens = this.cache?.get(nestedPath);
-
-    if (!focusedLens) {
-      throw new Error(`There is no focused lens: ${nestedPath}`);
-    }
-
-    return focusedLens;
-  }
-
-  public reflect(getter: (value: LensesValues<any>, lens: LensCore) => Record<string, LensCore> | [Record<string, LensCore>]): LensCore {
-    const fromCache = this.cache?.get(this.settings.propPath ?? '', getter);
+    const fromCache = this.cache?.get(nestedPath);
 
     if (fromCache) {
       return fromCache;
     }
 
-    const proxy = new Proxy(
+    if (Array.isArray(this.override)) {
+      const [template] = this.override;
+      const result = new LensCore(this.control, nestedPath, this.cache);
+      result.isArrayItemReflection = true;
+      result.override = template;
+
+      this.cache?.set(result, nestedPath);
+
+      return result;
+    } else if (this.override) {
+      const overriddenLens: LensCore<T> | undefined = get(this.override, propString);
+
+      if (!overriddenLens) {
+        const result = new LensCore(this.control, nestedPath, this.cache);
+        this.cache?.set(result, nestedPath);
+        return result;
+      }
+
+      if (this.isArrayItemReflection) {
+        const arrayItemNestedPath = `${this.path}.${overriddenLens.path}`;
+        const result = new LensCore(this.control, arrayItemNestedPath, this.cache);
+        this.cache?.set(result, arrayItemNestedPath);
+        return result;
+      } else {
+        this.cache?.set(overriddenLens, nestedPath);
+        return overriddenLens;
+      }
+    }
+
+    const result = new LensCore(this.control, nestedPath, this.cache);
+    this.cache?.set(result, nestedPath);
+    return result;
+  }
+
+  public reflect(
+    getter: (
+      dictionary: ProxyHandler<Record<string, LensCore<T>>>,
+      lens: LensCore<T>,
+    ) => Record<string, LensCore<T>> | [Record<string, LensCore<T>>],
+  ): LensCore<T> {
+    const fromCache = this.cache?.get(this.path, getter);
+
+    if (fromCache) {
+      return fromCache;
+    }
+
+    const template = new LensCore(this.control, this.path, this.cache);
+
+    const dictionary = new Proxy(
       {},
       {
         get: (target, prop) => {
           if (typeof prop === 'string') {
-            return this.focus(prop);
+            return template.focus(prop);
           }
 
           return target;
@@ -104,27 +106,26 @@ export class LensCore {
       },
     );
 
-    const focusContext = getter(proxy, this);
+    const override = getter(dictionary, template);
 
-    const newLens = new LensCore(this.control, this.cache, {
-      lensesMap: focusContext,
-      propPath: this.settings.propPath,
-      restructureSourcePath: this.settings.propPath,
-    });
-
-    this.cache?.set(newLens, this.settings.propPath ?? '', getter);
-
-    return newLens;
+    if (Array.isArray(override)) {
+      const result = new LensCore(this.control, this.path, this.cache);
+      template.path = '';
+      result.override = getter(dictionary, template);
+      this.cache?.set(result, this.path, getter);
+      return result;
+    } else {
+      template.override = override;
+      template.path = this.path;
+      this.cache?.set(template, this.path, getter);
+      return template;
+    }
   }
 
   public map<R>(
     fields: Record<string, any>[],
-    mapper: (value: unknown, item: LensCore, index: number, array: unknown[], lens: this) => R,
+    mapper: (value: unknown, item: LensCore<T>, index: number, array: unknown[], lens: this) => R,
   ): R[] {
-    if (!this.settings.propPath) {
-      throw new Error(`There is no prop name in this lens: ${this.settings.propPath}`);
-    }
-
     return fields.map((value, index, array) => {
       const item = this.focus(index.toString());
       const res = mapper(value, item, index, array, this);
@@ -132,11 +133,62 @@ export class LensCore {
     });
   }
 
-  public interop(cb?: (control: Control, name: string | undefined, lens: LensCore) => any): {
-    control: Control;
-    name: string | undefined;
-    lens: LensCore;
-  } {
-    return cb ? cb(this.control, this.settings.propPath, this) : { control: this.control, name: this.settings.propPath, lens: this };
+  public interop(cb?: (control: Control<T>, name: string | undefined) => any): LensCoreInteropBinding<T> | undefined {
+    if (cb) {
+      return cb(this.control, this.path);
+    }
+
+    this.interopCache ??= {
+      control: this.control,
+      name: this.path,
+      ...(this.override ? { getTransformer: this.getTransformer.bind(this), setTransformer: this.setTransformer.bind(this) } : {}),
+    };
+
+    return this.interopCache;
+  }
+
+  private getTransformer(value: unknown): unknown {
+    const [template] = Array.isArray(this.override) ? this.override : [this.override];
+
+    if (!value || !template) {
+      return value;
+    }
+
+    const newValue = {} as typeof value;
+
+    Object.entries(template).forEach(([key, valueTemplate]) => {
+      const restructuredLens = valueTemplate;
+
+      if (!restructuredLens) {
+        return;
+      }
+
+      const v = get(value, restructuredLens.path);
+      set(newValue, key, v);
+    });
+
+    return newValue;
+  }
+
+  private setTransformer(value: unknown): unknown {
+    const [template] = Array.isArray(this.override) ? this.override : [this.override];
+
+    if (!value || !template) {
+      return value;
+    }
+
+    const newValue = {} as typeof value;
+
+    Object.entries(value).forEach(([key, value]) => {
+      const restructuredLens = template[key];
+
+      if (!restructuredLens) {
+        return;
+      }
+
+      set(newValue, restructuredLens.path, value);
+    });
+
+    return newValue;
   }
 }

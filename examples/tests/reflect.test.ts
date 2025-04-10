@@ -92,11 +92,9 @@ test('reflect can work with array', () => {
   expect(one).toEqual({
     name: 'items.0.value',
     control: result.current.form.control,
-    lens: result.current.lens.focus('0').focus('another'),
   });
   expect(two).toEqual({
     name: 'items.1.value',
     control: result.current.form.control,
-    lens: result.current.lens.focus('1').focus('another'),
   });
 });

@@ -63,9 +63,9 @@ function FormComponent() {
   return (
     <form onSubmit={handleSubmit(console.log)}>
       <PersonForm
-        lens={lens.reflect((l) => ({
-          name: l.focus('firstName'),
-          surname: l.focus('lastName'),
+        lens={lens.reflect(({ firstName, lastName }) => ({
+          name: firstName,
+          surname: lastName,
         }))}
       />
       <ChildForm lens={lens.focus('children')} />
@@ -82,8 +82,8 @@ function ChildForm({ lens }: { lens: Lens<{ name: string; surname: string }[]> }
       <button type="button" onClick={() => append({ name: '', surname: '' })}>
         Add child
       </button>
-      {lens.map(fields, (l, key) => (
-        <PersonForm key={key} lens={l} />
+      {lens.map(fields, (value, l) => (
+        <PersonForm key={value.id} lens={l} />
       ))}
     </>
   );

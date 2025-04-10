@@ -1,5 +1,6 @@
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Lens, useLens } from '@hookform/lenses';
+import { useFieldArray } from '@hookform/lenses/rhf';
 import { action } from '@storybook/addon-actions';
 import { Meta } from '@storybook/react';
 

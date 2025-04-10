@@ -16,8 +16,8 @@ test('map can create a new lens', () => {
 
   expectTypeOf(itemLenses).toEqualTypeOf<Lens<string>[]>();
 
-  expect(itemLenses[0]?.interop()).toEqual({ name: 'items.0.a', control: result.current.form.control, lens: itemLenses[0] });
-  expect(itemLenses[1]?.interop()).toEqual({ name: 'items.1.a', control: result.current.form.control, lens: itemLenses[1] });
+  expect(itemLenses[0]?.interop()).toEqual({ name: 'items.0.a', control: result.current.form.control });
+  expect(itemLenses[1]?.interop()).toEqual({ name: 'items.1.a', control: result.current.form.control });
 });
 
 test('map callback accepts a value and index', () => {
@@ -39,13 +39,13 @@ test('map callback accepts a value and index', () => {
   );
 
   expect(itemLenses[0]).toMatchObject({
-    interop: { name: 'items.0', control: result.current.form.control, lens: itemLenses[0]?.lens },
+    interop: { name: 'items.0', control: result.current.form.control },
     id: 'one',
     index: 0,
   });
 
   expect(itemLenses[1]).toMatchObject({
-    interop: { name: 'items.1', control: result.current.form.control, lens: itemLenses[1]?.lens },
+    interop: { name: 'items.1', control: result.current.form.control },
     id: 'two',
     index: 1,
   });
