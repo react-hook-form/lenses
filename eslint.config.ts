@@ -1,5 +1,3 @@
-// @ts-check
-
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
@@ -9,7 +7,8 @@ export default tseslint.config(
   {
     ignores: ['.history', 'dist', 'node_modules'],
   },
-  reactPlugin.configs.flat.recommended,
+  // @ts-expect-error - looks like wrong types
+  reactPlugin.configs.flat['recommended'],
   ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
   {
