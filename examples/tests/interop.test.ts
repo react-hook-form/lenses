@@ -1,5 +1,5 @@
 import { Control, useController, useForm } from 'react-hook-form';
-import { NonObjectFieldShim, ShimKeyName, useLens } from '@hookform/lenses';
+import { HookFormControlShim, ShimKeyName, useLens } from '@hookform/lenses';
 import { renderHook } from '@testing-library/react';
 import { expectTypeOf } from 'vitest';
 
@@ -14,7 +14,7 @@ test('interop returns name and control', () => {
 
   expectTypeOf(interop).toEqualTypeOf<{
     name: ShimKeyName;
-    control: Control<NonObjectFieldShim<string>>;
+    control: Control<HookFormControlShim<string>>;
   }>();
 
   expect(interop.name).toBe('a');
@@ -32,7 +32,7 @@ test('interop can be used with a callback', () => {
 
   expectTypeOf(interop).toEqualTypeOf<{
     interopName: ShimKeyName;
-    interopControl: Control<NonObjectFieldShim<string>>;
+    interopControl: Control<HookFormControlShim<string>>;
   }>();
 
   expect(interop.interopName).toBe('a');
@@ -62,7 +62,8 @@ test('interop can hold the union value of the field', () => {
   const { result } = renderHook(() => {
     const form = useForm<{ a: string | number }>();
     const lens = useLens({ control: form.control });
-    const ctrl = useController(lens.focus('a').interop());
+    const interop = lens.focus('a').interop();
+    const ctrl = useController(interop);
     return { lens, form, ctrl };
   });
 

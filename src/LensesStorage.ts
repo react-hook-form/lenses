@@ -4,17 +4,20 @@ import type { LensCore } from './LensCore';
 
 export type LensesStorageComplexKey = (...args: any[]) => any;
 
-export interface LensesStorageValue {
-  plain?: LensCore;
-  complex: WeakMap<LensesStorageComplexKey, LensCore>;
+export interface LensesStorageValue<T extends FieldValues> {
+  plain?: LensCore<T>;
+  complex: WeakMap<LensesStorageComplexKey, LensCore<T>>;
 }
 
-export type LensCache = Map<string, LensesStorageValue>;
+export type LensCache<T extends FieldValues> = Map<string, LensesStorageValue<T>>;
 
-export class LensesStorage<TFieldValues extends FieldValues = FieldValues> {
-  private cache: LensCache;
+/**
+ * Cache storage for lenses.
+ */
+export class LensesStorage<T extends FieldValues> {
+  private cache: LensCache<T>;
 
-  constructor(control: Control<TFieldValues>) {
+  constructor(control: Control<T>) {
     this.cache = new Map();
 
     control?._subjects?.values?.subscribe?.({
@@ -26,8 +29,8 @@ export class LensesStorage<TFieldValues extends FieldValues = FieldValues> {
     });
   }
 
-  public get(propPath: string, complexKey?: LensesStorageComplexKey): LensCore | undefined {
-    const cached = this.cache.get(propPath);
+  public get(path: string, complexKey?: LensesStorageComplexKey): LensCore<T> | undefined {
+    const cached = this.cache.get(path);
 
     if (cached) {
       if (complexKey) {
@@ -40,15 +43,15 @@ export class LensesStorage<TFieldValues extends FieldValues = FieldValues> {
     return undefined;
   }
 
-  public set(lens: LensCore, propPath: string, complexKey?: LensesStorageComplexKey): void {
-    let cached = this.cache.get(propPath);
+  public set(lens: LensCore<T>, path: string, complexKey?: LensesStorageComplexKey): void {
+    let cached = this.cache.get(path);
 
     if (!cached) {
       cached = {
         complex: new WeakMap(),
       };
 
-      this.cache.set(propPath, cached);
+      this.cache.set(path, cached);
     }
 
     if (complexKey) {
@@ -58,17 +61,17 @@ export class LensesStorage<TFieldValues extends FieldValues = FieldValues> {
     }
   }
 
-  public has(propPath: string, complexKey?: LensesStorageComplexKey): boolean {
+  public has(path: string, complexKey?: LensesStorageComplexKey): boolean {
     if (complexKey) {
-      return this.cache.get(propPath)?.complex.has(complexKey) ?? false;
+      return this.cache.get(path)?.complex.has(complexKey) ?? false;
     }
 
-    return this.cache.has(propPath);
+    return this.cache.has(path);
   }
 
-  public delete(propPath: string): void {
+  public delete(path: string): void {
     for (const key of this.cache.keys()) {
-      if (key.startsWith(propPath)) {
+      if (key.startsWith(path)) {
         this.cache.delete(key);
       }
     }

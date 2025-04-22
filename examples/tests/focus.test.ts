@@ -53,7 +53,6 @@ test('lens can focus on a field array item', () => {
   });
 
   expectTypeOf(result.current.focus('a').focus('0')).toEqualTypeOf<Lens<string>>();
-  // @ts-expect-error number is not a valid index
   assertType(result.current.focus('a').focus(0));
 });
 
