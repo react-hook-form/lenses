@@ -21,6 +21,7 @@ test('watch: can get values', () => {
 
   const watch = result.current.watch;
   expect(watch.a).toBe('test_a');
+  expect(result.current.rhfWatch.__DO_NOT_USE_HOOK_FORM_CONTROL_SHIM__?.a).toBeUndefined();
   // @ts-expect-error
   expect(result.current.rhfWatch.a).toBe('test_a');
 });
@@ -55,6 +56,8 @@ test('watch: can get values only for focusing values', () => {
   expect(watch.message).toBe('Hello');
   // @ts-expect-error
   expect(watch.first).toBeUndefined();
+
+  expect(result.current.rhfWatch.__DO_NOT_USE_HOOK_FORM_CONTROL_SHIM__?.introduction?.message).toBeUndefined();
   // @ts-expect-error
   expect(result.current.rhfWatch.introduction.message).toBe('Hello');
 });
