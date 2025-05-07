@@ -61,3 +61,36 @@ test('watch: can get values only for focusing values', () => {
   // @ts-expect-error
   expect(result.current.rhfWatch.introduction.message).toBe('Hello');
 });
+
+test('watch: can get values only for multiple focusing values', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{
+      introduction: {
+        message: string;
+        hobby: {
+          name: string;
+        };
+      };
+    }>({
+      defaultValues: {
+        introduction: {
+          message: 'Hello',
+          hobby: {
+            name: 'Baseball',
+          },
+        },
+      },
+    });
+    const lens = useLens({ control: form.control });
+    const watch = useWatchLens(lens.focus('introduction.hobby'));
+    const rhfWatch = useWatch({
+      control: lens.interop().control,
+    });
+    return { lens, form, watch, rhfWatch };
+  });
+
+  expect(result.current.watch.name).toBe('Baseball');
+  expect(result.current.rhfWatch.__DO_NOT_USE_HOOK_FORM_CONTROL_SHIM__?.introduction?.hobby?.name).toBeUndefined();
+  // @ts-expect-error
+  expect(result.current.rhfWatch.introduction.message).toBe('Hello');
+});

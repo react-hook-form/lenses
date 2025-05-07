@@ -33,9 +33,10 @@ import type { Lens } from './types';
  */
 export function useWatchLens<TFieldValues extends FieldValues = FieldValues>(lens: Lens<TFieldValues>): TFieldValues {
   const { control, name } = lens.interop();
-  const data = useWatch({
+  return useWatch({
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    name: name ? name : undefined,
     control,
   }) as TFieldValues;
-
-  return name ? data[name] : data;
 }
