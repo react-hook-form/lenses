@@ -1,13 +1,11 @@
-import { type FieldValues, useWatch } from 'react-hook-form';
-
-import type { Lens } from './types';
+import { type Control, type FieldValues, useWatch as useWatchRhf } from 'react-hook-form';
 
 /**
  * Watch lens.
  *
  * @example
  * ```tsx
- * import { useWatchLens } from './useWatchLens';
+ * import { useWatch } from './useWatch';
  * import type { Lens } from './types';
  *
  * export type FormValues = {
@@ -19,7 +17,7 @@ import type { Lens } from './types';
  * };
  *
  * export function CountableTextArea({ lens }: Props) {
- *   const formValues = useWatchLens(lens);
+ *   const formValues = useWatch(lens);
  *   const { name, control } = lens.interop();
  *
  *   return (
@@ -31,12 +29,15 @@ import type { Lens } from './types';
  * }
  * ```
  */
-export function useWatchLens<TFieldValues extends FieldValues = FieldValues>(lens: Lens<TFieldValues>): TFieldValues {
-  const { control, name } = lens.interop();
-  return useWatch({
+export function useWatch<TFieldValues extends FieldValues = FieldValues>(props: {
+  name: '__DO_NOT_USE_HOOK_FORM_CONTROL_SHIM__';
+  control: Control<TFieldValues>;
+}): TFieldValues['__DO_NOT_USE_HOOK_FORM_CONTROL_SHIM__'] {
+  const { control, name } = props;
+  return useWatchRhf({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     name: name ? name : undefined,
     control,
-  }) as TFieldValues;
+  }) as TFieldValues['__DO_NOT_USE_HOOK_FORM_CONTROL_SHIM__'];
 }
