@@ -17,8 +17,8 @@ import { type Control, type FieldValues, useWatch as useWatchRhf } from 'react-h
  * };
  *
  * export function CountableTextArea({ lens }: Props) {
- *   const formValues = useWatch(lens);
  *   const { name, control } = lens.interop();
+ *   const formValues = useWatch({ name, control });
  *
  *   return (
  *     <div>
