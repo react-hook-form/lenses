@@ -5,6 +5,16 @@ import type { HookFormControlShim, LensInterop } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
 
+export type LensSelector<T> = T extends any[]
+  ? ArrayLens<T>
+  : T extends FieldValues
+    ? ObjectLens<T>
+    : T extends boolean | true | false
+      ? PrimitiveLens<boolean>
+      : T extends null | undefined
+        ? never
+        : PrimitiveLens<T>;
+
 /**
  * This is a type that allows you to hold the type of a form element.
  *
@@ -17,7 +27,7 @@ import type { PrimitiveLens } from './PrimitiveLens';
  * In runtime it has `control` and `name` to use latter in react-hook-form.
  * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
  */
-export type Lens<T> = LensInterop<T> & (T extends any[] ? ArrayLens<T> : T extends FieldValues ? ObjectLens<T> : PrimitiveLens<T>);
+export type Lens<T> = LensInterop<Exclude<T, null | undefined>> & LensSelector<T>;
 
 export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;
