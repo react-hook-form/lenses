@@ -20,8 +20,11 @@ jobs:
       - name: Lint
         run: bun lint
 
-  test:
-    name: Test
+      - name: Prettier
+        run: bun prettier
+
+  test-unit:
+    name: Test Unit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -30,8 +33,21 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/setup
 
-      - name: Build
-        run: bun run build
+      - name: Run unit tests
+        run: bun test:unit
 
-      - name: Run tests
-        run: bun test:run
+  test-e2e:
+    name: Test E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Install playwright
+        run: bun playwright install
+
+      - name: Run e2e tests
+        run: bun test:e2e
