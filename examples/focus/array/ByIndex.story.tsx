@@ -60,7 +60,6 @@ export const ByIndex: Story = {
 
     await userEvent.type(canvas.getByPlaceholderText(/items.0.id/i), 'one');
     await userEvent.type(canvas.getByPlaceholderText(/items.0.value/i), 'one value');
-    await userEvent.type(canvas.getByPlaceholderText(/items.1.id/i), 'two');
     await userEvent.type(canvas.getByPlaceholderText(/items.1.value/i), 'two value');
 
     await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
