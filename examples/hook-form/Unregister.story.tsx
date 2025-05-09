@@ -91,7 +91,7 @@ export function Unregister({ onSubmit = action('submit') }: UnregisterProps) {
         </div>
 
         <div>
-          <button type="submit">submit</button>
+          <input type="submit" />
         </div>
       </form>
     </>

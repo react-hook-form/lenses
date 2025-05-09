@@ -45,7 +45,7 @@ test('lens can focus on a field array item', () => {
   expectTypeOf(result.current.focus('a').focus('0')).toEqualTypeOf<Lens<string>>();
 });
 
-test('lens can focus on a field array item by number', () => {
+test('lens can focus on a field array item by index', () => {
   const { result } = renderHook(() => {
     const form = useForm<{ a: string[] }>();
     const lens = useLens({ control: form.control });

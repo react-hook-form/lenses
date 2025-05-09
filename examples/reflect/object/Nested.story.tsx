@@ -4,40 +4,40 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { StringInput } from '../components';
+import { StringInput } from '../../components';
 
 const meta = {
-  title: 'Restructure',
-  component: Reflect,
+  title: 'Reflect/Object',
+  component: Playground,
 } satisfies Meta;
 
-type Story = StoryObj<typeof meta>;
 export default meta;
 
-export interface ReflectFormData {
+type Story = StoryObj<typeof meta>;
+
+interface PlaygroundData {
   firstName: string;
-  lastName: { value: string };
+  lastName: string;
 }
 
-export interface ReflectProps {
-  onSubmit: SubmitHandler<ReflectFormData>;
+interface PlaygroundProps {
+  onSubmit: SubmitHandler<PlaygroundData>;
 }
 
-export function Reflect({ onSubmit = action('submit') }: ReflectProps) {
-  const { handleSubmit, control } = useForm<ReflectFormData>();
+function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
+  const { handleSubmit, control } = useForm<PlaygroundData>();
   const lens = useLens({ control });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PersonForm
-        lens={lens.reflect(({ firstName, lastName }) => ({
-          name: firstName,
-          surname: lastName.focus('value'),
+        lens={lens.focus('firstName').reflect((_, firstName) => ({
+          name: firstName.reflect((_, l) => ({ nestedName: l })).focus('nestedName'),
+          surname: lens.focus('lastName'),
         }))}
       />
-
       <div>
-        <button id="submit">Submit</button>
+        <input type="submit" />
       </div>
     </form>
   );
@@ -57,25 +57,23 @@ function PersonForm({ lens }: { lens: Lens<PersonFormData> }) {
   );
 }
 
-const onSubmit = fn();
-
-export const ShouldChangeLensViaReflect: Story = {
+export const Nested: Story = {
   args: {
-    onSubmit,
+    onSubmit: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
     await userEvent.type(canvas.getByPlaceholderText(/firstName/i), 'joe');
     await userEvent.type(canvas.getByPlaceholderText(/lastName/i), 'doe');
 
-    await userEvent.click(canvas.getByText(/submit/i));
+    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
 
-    expect(onSubmit).toHaveBeenCalledWith(
+    expect(args.onSubmit).toHaveBeenCalledWith(
       {
         firstName: 'joe',
-        lastName: { value: 'doe' },
-      } satisfies ReflectFormData,
+        lastName: 'doe',
+      },
       expect.anything(),
     );
   },

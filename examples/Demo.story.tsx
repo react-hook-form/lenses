@@ -40,7 +40,7 @@ export function Demo({ onSubmit = action('submit') }: DemoProps) {
 
       <ChildForm lens={lens.focus('children')} />
       <div>
-        <button type="submit">submit</button>
+        <input type="submit" />
       </div>
     </form>
   );

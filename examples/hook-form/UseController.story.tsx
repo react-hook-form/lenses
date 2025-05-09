@@ -27,7 +27,7 @@ export function UseController({ onSubmit = action('submit'), onInvalid = action(
       <PasswordInput lens={lens.focus('password')} placeholder="password" rules={{ required: 'password is required' }} />
 
       <div>
-        <button type="submit">submit</button>
+        <input type="submit" />
       </div>
     </form>
   );

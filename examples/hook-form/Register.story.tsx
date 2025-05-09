@@ -31,7 +31,7 @@ export function Register({ onSubmit = action('submit') }: RegisterProps) {
       <NumberInput lens={lens.focus('age')} placeholder="age" />
 
       <div>
-        <button type="submit">submit</button>
+        <input type="submit" />
       </div>
     </form>
   );
@@ -69,7 +69,7 @@ export const RegisterViaLens: Story = {
     await userEvent.type(canvas.getByPlaceholderText(/username/i), 'joe');
     await userEvent.type(canvas.getByPlaceholderText(/age/i), '20');
 
-    await userEvent.click(canvas.getByText(/submit/i));
+    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
 
     expect(onSubmit).toHaveBeenCalledWith(
       {

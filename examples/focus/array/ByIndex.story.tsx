@@ -4,58 +4,58 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { StringInput } from '../components';
+import { StringInput } from '../../components';
 
 const meta = {
-  title: 'Array',
-  component: ItemFocus,
+  title: 'Focus/Array',
+  component: Playground,
 } satisfies Meta;
 
-type Story = StoryObj<typeof meta>;
 export default meta;
 
-export interface Item {
+type Story = StoryObj<typeof meta>;
+
+interface Item {
   id: string;
   value: string;
 }
 
-export interface ItemFocusData {
+interface PlaygroundData {
   items: Item[];
 }
 
-export interface ItemFocusProps {
-  onSubmit: SubmitHandler<ItemFocusData>;
+interface PlaygroundProps {
+  onSubmit: SubmitHandler<PlaygroundData>;
 }
 
-export function ItemFocus({ onSubmit = action('submit') }: ItemFocusProps) {
-  const { handleSubmit, control } = useForm<ItemFocusData>({});
+function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
+  const { handleSubmit, control } = useForm<PlaygroundData>({});
   const lens = useLens({ control });
+  const items = lens.focus('items');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <StringInput label="Id 0" lens={lens.focus('items.0.id')} />
-        <StringInput label="Value 0" lens={lens.focus('items.0.value')} />
+        <StringInput label="Id 0" lens={items.focus(0).focus('id')} />
+        <StringInput label="Value 0" lens={items.focus(0).focus('value')} />
       </div>
 
       <div>
-        <StringInput label="Id 1" lens={lens.focus('items.1.id')} />
-        <StringInput label="Value 1" lens={lens.focus('items.1.value')} />
+        <StringInput label="Id 1" lens={items.focus(1).focus('id')} />
+        <StringInput label="Value 1" lens={items.focus(1).focus('value')} />
       </div>
       <div>
-        <button type="submit">submit</button>
+        <input type="submit" />
       </div>
     </form>
   );
 }
 
-const onSubmit = fn();
-
-export const RegisterViaLens: Story = {
+export const ByIndex: Story = {
   args: {
-    onSubmit,
+    onSubmit: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
     await userEvent.type(canvas.getByPlaceholderText(/items.0.id/i), 'one');
@@ -63,9 +63,9 @@ export const RegisterViaLens: Story = {
     await userEvent.type(canvas.getByPlaceholderText(/items.1.id/i), 'two');
     await userEvent.type(canvas.getByPlaceholderText(/items.1.value/i), 'two value');
 
-    await userEvent.click(canvas.getByText(/submit/i));
+    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
 
-    expect(onSubmit).toHaveBeenCalledWith(
+    expect(args.onSubmit).toHaveBeenCalledWith(
       {
         items: [
           {

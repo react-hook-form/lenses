@@ -5,30 +5,31 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { StringInput } from '../components';
+import { StringInput } from '../../components';
 
 const meta = {
-  title: 'Restructure',
-  component: ArrayReflect,
+  title: 'Reflect/Array',
+  component: Playground,
 } satisfies Meta;
 
-type Story = StoryObj<typeof meta>;
 export default meta;
 
-export interface Item {
+type Story = StoryObj<typeof meta>;
+
+interface Item {
   value: { inside: string };
 }
 
-export interface ArrayReflectFormData {
+interface PlaygroundData {
   items: Item[];
 }
 
-export interface ArrayReflectProps {
-  onSubmit: SubmitHandler<ArrayReflectFormData>;
+interface PlaygroundProps {
+  onSubmit: SubmitHandler<PlaygroundData>;
 }
 
-export function ArrayReflect({ onSubmit = action('submit') }: ArrayReflectProps) {
-  const { handleSubmit, control } = useForm<ArrayReflectFormData>({
+function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
+  const { handleSubmit, control } = useForm<PlaygroundData>({
     defaultValues: { items: [{ value: { inside: 'one' } }, { value: { inside: 'two' } }, { value: { inside: 'three' } }] },
   });
   const lens = useLens({ control });
@@ -37,7 +38,7 @@ export function ArrayReflect({ onSubmit = action('submit') }: ArrayReflectProps)
     <form onSubmit={handleSubmit(onSubmit)}>
       <Items lens={lens.focus('items').reflect((l) => [{ data: l.value.focus('inside') }])} />
       <div>
-        <button type="submit">submit</button>
+        <input type="submit" />
       </div>
     </form>
   );
@@ -66,13 +67,11 @@ function Items({ lens }: { lens: Lens<{ data: string }[]> }) {
   );
 }
 
-const onSubmit = fn();
-
-export const ShouldChangeArrayLensViaReflect: Story = {
+export const TopLevel: Story = {
   args: {
-    onSubmit,
+    onSubmit: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
     expect(canvas.getByPlaceholderText('items.0.value.inside')).toHaveValue('one');
@@ -84,9 +83,9 @@ export const ShouldChangeArrayLensViaReflect: Story = {
     await userEvent.type(canvas.getByPlaceholderText('items.3.value.inside'), ' four');
     expect(canvas.getByPlaceholderText('items.3.value.inside')).toHaveValue('more four');
 
-    await userEvent.click(canvas.getByText(/submit/i));
+    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
 
-    expect(onSubmit).toHaveBeenCalledWith(
+    expect(args.onSubmit).toHaveBeenCalledWith(
       {
         items: [
           { value: { inside: 'one' } },
@@ -94,7 +93,7 @@ export const ShouldChangeArrayLensViaReflect: Story = {
           { value: { inside: 'three' } },
           { value: { inside: 'more four' } },
         ],
-      } satisfies ArrayReflectFormData,
+      },
       expect.anything(),
     );
   },

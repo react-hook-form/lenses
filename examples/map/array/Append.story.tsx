@@ -5,37 +5,38 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
-import { StringInput } from '../components';
+import { StringInput } from '../../components';
 
 const meta = {
-  title: 'Array',
-  component: Map,
+  title: 'Map/Array',
+  component: Playground,
 } satisfies Meta;
 
-type Story = StoryObj<typeof meta>;
 export default meta;
 
-export interface Item {
+type Story = StoryObj<typeof meta>;
+
+interface Item {
   value: string;
 }
 
-export interface MapData {
+interface PlaygroundData {
   items: Item[];
 }
 
-export interface MapProps {
-  onSubmit: SubmitHandler<MapData>;
+interface PlaygroundProps {
+  onSubmit: SubmitHandler<PlaygroundData>;
 }
 
-export function Map({ onSubmit = action('submit') }: MapProps) {
-  const { handleSubmit, control } = useForm<MapData>({});
+function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
+  const { handleSubmit, control } = useForm<PlaygroundData>({});
   const lens = useLens({ control });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Items lens={lens.focus('items')} />
       <div>
-        <button type="submit">submit</button>
+        <input type="submit" />
       </div>
     </form>
   );
@@ -58,13 +59,11 @@ function Items({ lens }: { lens: Lens<Item[]> }) {
   );
 }
 
-const onSubmit = fn();
-
-export const AddNestedArrayElements: Story = {
+export const Append: Story = {
   args: {
-    onSubmit,
+    onSubmit: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
     await userEvent.click(canvas.getByRole('button', { name: /add item/i }));
@@ -76,9 +75,9 @@ export const AddNestedArrayElements: Story = {
     await userEvent.click(canvas.getByRole('button', { name: /add item/i }));
     await userEvent.type(canvas.getByPlaceholderText(/items\.2\.value/i), 'three');
 
-    await userEvent.click(canvas.getByText(/submit/i));
+    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
 
-    expect(onSubmit).toHaveBeenCalledWith(
+    expect(args.onSubmit).toHaveBeenCalledWith(
       {
         items: [{ value: 'one' }, { value: 'two' }, { value: 'three' }],
       },
