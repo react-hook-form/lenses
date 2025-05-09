@@ -20,6 +20,9 @@ jobs:
       - name: Lint
         run: bun lint
 
+      - name: Prettier
+        run: bun prettier
+
   test-unit:
     name: Test Unit
     runs-on: ubuntu-latest
