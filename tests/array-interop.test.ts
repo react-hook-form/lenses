@@ -17,6 +17,6 @@ test('interop returns name and control', () => {
     control: Control<HookFormControlShim<{ b: string }[]>>;
   }>();
 
-  expect(interop.name).toBe('aw');
+  expect(interop.name).toBe('a');
   expect(interop.control).toBe(result.current.form.control);
 });
