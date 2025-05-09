@@ -1,35 +1,37 @@
 import { type SubmitHandler, useForm } from 'react-hook-form';
-import { type Lens, useLens } from '@hookform/lenses';
+import { useLens } from '@hookform/lenses';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from '@storybook/test';
 
+import { NumberInput, StringInput } from '../components';
+
 const meta = {
-  title: 'Hook Form',
-  component: Register,
+  title: 'HookForm',
+  component: Playground,
 } satisfies Meta;
 
-type Story = StoryObj<typeof meta>;
 export default meta;
 
-export interface RegisterFormData {
+type Story = StoryObj<typeof meta>;
+
+interface PlaygroundData {
   username: string;
   age: number;
 }
 
-export interface RegisterProps {
-  onSubmit: SubmitHandler<RegisterFormData>;
+interface PlaygroundProps {
+  onSubmit: SubmitHandler<PlaygroundData>;
 }
 
-export function Register({ onSubmit = action('submit') }: RegisterProps) {
-  const { handleSubmit, control } = useForm<RegisterFormData>({});
+function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
+  const { handleSubmit, control } = useForm<PlaygroundData>({});
   const lens = useLens({ control });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <StringInput lens={lens.focus('username')} placeholder="username" />
-      <NumberInput lens={lens.focus('age')} placeholder="age" />
-
+      <StringInput label="Username" lens={lens.focus('username')} />
+      <NumberInput label="Age" lens={lens.focus('age')} />
       <div>
         <input type="submit" />
       </div>
@@ -37,33 +39,11 @@ export function Register({ onSubmit = action('submit') }: RegisterProps) {
   );
 }
 
-interface StringInputProps {
-  lens: Lens<string>;
-  placeholder?: string;
-}
-
-function StringInput({ lens, placeholder }: StringInputProps) {
-  return <input {...lens.interop((ctrl, name) => ctrl.register(name))} placeholder={placeholder} />;
-}
-
-interface NumberInputProps {
-  lens: Lens<number>;
-  placeholder?: string;
-}
-
-function NumberInput({ lens, placeholder }: NumberInputProps) {
-  const { control, name } = lens.interop();
-
-  return <input type="number" {...control.register(name, { valueAsNumber: true })} placeholder={placeholder} />;
-}
-
-const onSubmit = fn();
-
-export const RegisterViaLens: Story = {
+export const Register: Story = {
   args: {
-    onSubmit,
+    onSubmit: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
 
     await userEvent.type(canvas.getByPlaceholderText(/username/i), 'joe');
@@ -71,7 +51,7 @@ export const RegisterViaLens: Story = {
 
     await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
 
-    expect(onSubmit).toHaveBeenCalledWith(
+    expect(args.onSubmit).toHaveBeenCalledWith(
       {
         username: 'joe',
         age: 20,

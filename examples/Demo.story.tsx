@@ -13,7 +13,7 @@ export interface Person {
   surname: string;
 }
 
-export interface DemoFormData {
+export interface DemoData {
   firstName: string;
   lastName: string;
   age: number;
@@ -21,11 +21,11 @@ export interface DemoFormData {
 }
 
 export interface DemoProps {
-  onSubmit: SubmitHandler<DemoFormData>;
+  onSubmit: SubmitHandler<DemoData>;
 }
 
 export function Demo({ onSubmit = action('submit') }: DemoProps) {
-  const { handleSubmit, control } = useForm<DemoFormData>({});
+  const { handleSubmit, control } = useForm<DemoData>({});
   const lens = useLens({ control });
 
   return (

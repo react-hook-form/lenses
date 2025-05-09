@@ -3,15 +3,21 @@ import { type Path, type SubmitHandler, useForm } from 'react-hook-form';
 import { type Lens, useLens } from '@hookform/lenses';
 import { useFieldArray } from '@hookform/lenses/rhf';
 import { action } from '@storybook/addon-actions';
-import type { Meta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { expect, fn, userEvent, within } from '@storybook/test';
 
 import { NumberInput, StringInput } from '../components';
 
-export default {
-  title: 'Hook Form',
+const meta = {
+  title: 'HookForm',
+  component: Playground,
 } satisfies Meta;
 
-export interface UnregisterFormData {
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+interface PlaygroundData {
   username: string;
   age: number;
   deep: {
@@ -26,16 +32,16 @@ export interface UnregisterFormData {
   }[];
 }
 
-export interface UnregisterProps {
-  onSubmit: SubmitHandler<UnregisterFormData>;
+interface PlaygroundProps {
+  onSubmit: SubmitHandler<PlaygroundData>;
 }
 
-export function Unregister({ onSubmit = action('submit') }: UnregisterProps) {
-  const [hidden, setHidden] = useState(() => new Set<Path<UnregisterFormData> | 'form'>());
-  const { handleSubmit, control } = useForm<UnregisterFormData>({});
+function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
+  const [hidden, setHidden] = useState(() => new Set<Path<PlaygroundData> | 'form'>());
+  const { handleSubmit, control } = useForm<PlaygroundData>({});
   const lens = useLens({ control });
 
-  const toggleHidden = (path: Path<UnregisterFormData> | 'form') => {
+  const toggleHidden = (path: Path<PlaygroundData> | 'form') => {
     setHidden((prev) => prev.symmetricDifference(new Set([path])));
   };
 
@@ -124,3 +130,29 @@ function PersonForm({ lens, onRemove }: { lens: Lens<{ name: string; surname: st
     </div>
   );
 }
+
+export const Unregister: Story = {
+  args: {
+    onSubmit: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.click(canvas.getByRole('button', { name: /submit/i }));
+
+    expect(args.onSubmit).toHaveBeenCalledWith(
+      {
+        age: NaN,
+        children: [],
+        deep: {
+          another: '',
+          nested: {
+            value: '',
+          },
+        },
+        username: '',
+      },
+      expect.anything(),
+    );
+  },
+};
