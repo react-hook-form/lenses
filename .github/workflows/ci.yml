@@ -43,5 +43,8 @@ jobs:
       - name: Setup environment
         uses: ./.github/actions/setup
 
+      - name: Install playwright
+        run: bun playwright install
+
       - name: Run e2e tests
         run: bun test:e2e
