@@ -9,7 +9,7 @@ import { expect, fn, userEvent, within } from '@storybook/test';
 import { NumberInput, StringInput } from '../components';
 
 const meta = {
-  title: 'HookForm',
+  title: 'Hook-Form',
   component: Playground,
 } satisfies Meta;
 
