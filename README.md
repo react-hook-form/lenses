@@ -32,16 +32,6 @@ React Hook Form Lenses is a powerful TypeScript-first library that brings the el
 npm install @hookform/lenses
 ```
 
-### Features
-
-- **Type-Safe Form State**: Focus on specific parts of your form state with full TypeScript support and precise type inference
-- **Functional Lenses**: Build complex form state transformations through composable lens operations
-- **Deep Structure Support**: Handle deeply nested structures and arrays elegantly with specialized array operations
-- **Seamless Integration**: Work smoothly with React Hook Form's Control API and existing functionality
-- **Optimized Performance**: Each lens is cached and reused for optimal performance
-- **Array Handling**: Specialized support for array fields with type-safe mapping
-- **Composable API**: Build complex form state transformations through lens composition
-
 ### Quickstart
 
 ```tsx
