@@ -16,7 +16,7 @@
     "form-management",
     "react-components"
   ],
-  "homepage": "https://github.com/react-hook-form/lenses",
+  "homepage": "https://react-hook-form.com/docs/uselens",
   "bugs": {
     "url": "https://github.com/react-hook-form/lenses/issues"
   },

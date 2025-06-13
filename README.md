@@ -17,7 +17,7 @@
 </div>
 
 <p align="center">
-  <a href="https://codesandbox.io/p/sandbox/headless-river-3s693c">CodeSandbox</a> |
+  <a href="https://codesandbox.io/p/sandbox/keen-herschel-y5h2ft">CodeSandbox</a> |
   <a href="https://github.com/react-hook-form/lenses/tree/main/examples/stories">Examples</a> |
   <a href="https://react-hook-form.com/docs/uselens">Docs</a>
 </p>
