@@ -5,13 +5,21 @@ import type { HookFormControlShim, LensInterop } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
 
-export type LensSelector<T> = T extends any[]
+/**
+ * Why not use `T extends any[] ...`, instead of `[T] extends [any[]]`?:
+ * Because of @see {@link https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types}
+ *
+ * This allows using discriminated unions for T.
+ * For an example of what problem this solves:
+ * @see {@link https://github.com/react-hook-form/lenses/issues/16}
+ */
+export type LensSelector<T> = [T] extends [any[]]
   ? ArrayLens<T>
-  : T extends FieldValues
+  : [T] extends [FieldValues]
     ? ObjectLens<T>
-    : T extends boolean | true | false
+    : [T] extends [boolean | true | false]
       ? PrimitiveLens<boolean>
-      : T extends null | undefined
+      : [T] extends [null | undefined]
         ? never
         : PrimitiveLens<T>;
 
