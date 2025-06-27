@@ -96,5 +96,9 @@ export interface TopLensInteropBinding<T extends FieldValues> {
 }
 
 export interface TopLevelLensInterop<T extends FieldValues> {
+  /**
+   * This method returns `control` properties from react-hook-form.
+   * `name` is not provided because it is a top-level lens and doesn't have a specific field name.
+   */
   interop(): TopLensInteropBinding<T>;
 }
