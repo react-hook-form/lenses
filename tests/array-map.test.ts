@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { type Lens, useLens } from '@hookform/lenses';
+import { type Lens, type TopLevelLens, useLens } from '@hookform/lenses';
 import { renderHook } from '@testing-library/react';
 import { expectTypeOf } from 'vitest';
 
@@ -10,7 +10,7 @@ test('map can create a new lens', () => {
     return { lens, form };
   });
 
-  expectTypeOf(result.current.lens).toEqualTypeOf<Lens<{ items: { a: string }[] }>>();
+  expectTypeOf(result.current.lens).toEqualTypeOf<TopLevelLens<{ items: { a: string }[] }>>();
 
   const itemLenses = result.current.lens.focus('items').map([{ a: '1' }, { a: '2' }], (_, item) => item.focus('a'));
 
@@ -27,7 +27,7 @@ test('map callback accepts a value and index', () => {
     return { lens, form };
   });
 
-  expectTypeOf(result.current.lens).toEqualTypeOf<Lens<{ items: { a: string; myId: string }[] }>>();
+  expectTypeOf(result.current.lens).toEqualTypeOf<TopLevelLens<{ items: { a: string; myId: string }[] }>>();
 
   const items = result.current.lens.focus('items');
   const itemLenses = items.map(
