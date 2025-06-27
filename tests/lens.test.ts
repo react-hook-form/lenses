@@ -38,7 +38,7 @@ test('top-level lens should have undefined name', () => {
   });
 
   const interop = result.current.interop();
-  expect(interop.name).toBeUndefined();
+  expect('name' in interop).toBe(false);
 });
 
 test('top-level interop returns control', () => {
@@ -52,7 +52,6 @@ test('top-level interop returns control', () => {
 
   expectTypeOf(interop).toEqualTypeOf<{
     control: Control<{ a: string }>;
-    name: undefined;
   }>();
 
   expect(interop.control).toBe(result.current.form.control);

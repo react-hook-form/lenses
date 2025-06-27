@@ -5,7 +5,7 @@ import type { TopLevelLens } from './types';
 
 export interface LensCoreInteropBinding<T extends FieldValues> {
   control: Control<T>;
-  name: string | undefined;
+  name?: string | undefined;
   getTransformer?: (value: unknown) => unknown;
   setTransformer?: (value: unknown) => unknown;
 }
@@ -140,7 +140,7 @@ export class LensCore<T extends FieldValues> {
 
     this.interopCache ??= {
       control: this.control,
-      name: this.path || undefined,
+      ...(this.path !== '' && { name: this.path }),
       ...(this.override ? { getTransformer: this.getTransformer.bind(this), setTransformer: this.setTransformer.bind(this) } : {}),
     };
 

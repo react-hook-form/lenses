@@ -93,7 +93,6 @@ export interface LensInterop<T> {
 
 export interface TopLensInteropBinding<T extends FieldValues> {
   control: Control<T>;
-  name: undefined;
 }
 
 export interface TopLevelLensInterop<T extends FieldValues> {
