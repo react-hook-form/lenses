@@ -90,3 +90,12 @@ export interface LensInterop<T> {
    */
   interop<R>(callback: LensInteropFunction<HookFormControlShim<T>, ShimKeyName, R>): R;
 }
+
+export interface TopLensInteropBinding<T extends FieldValues> {
+  control: Control<T>;
+  name: undefined;
+}
+
+export interface TopLevelLensInterop<T extends FieldValues> {
+  interop(): TopLensInteropBinding<T>;
+}

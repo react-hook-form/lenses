@@ -1,7 +1,7 @@
 import { type Control, type FieldValues, get, set } from 'react-hook-form';
 
 import type { LensesStorage } from './LensesStorage';
-import type { Lens } from './types';
+import type { TopLevelLens } from './types';
 
 export interface LensCoreInteropBinding<T extends FieldValues> {
   control: Control<T>;
@@ -31,8 +31,8 @@ export class LensCore<T extends FieldValues> {
   public static create<TFieldValues extends FieldValues = FieldValues>(
     control: Control<TFieldValues>,
     cache?: LensesStorage<TFieldValues>,
-  ): Lens<TFieldValues> {
-    return new LensCore(control, '', cache) as unknown as Lens<TFieldValues>;
+  ): TopLevelLens<TFieldValues> {
+    return new LensCore(control, '', cache) as unknown as TopLevelLens<TFieldValues>;
   }
 
   public focus(prop: string | number): LensCore<T> {
@@ -140,7 +140,7 @@ export class LensCore<T extends FieldValues> {
 
     this.interopCache ??= {
       control: this.control,
-      name: this.path,
+      name: this.path || undefined,
       ...(this.override ? { getTransformer: this.getTransformer.bind(this), setTransformer: this.setTransformer.bind(this) } : {}),
     };
 

@@ -3,7 +3,7 @@ import type { Control, FieldValues } from 'react-hook-form';
 
 import { LensCore } from './LensCore';
 import { LensesStorage } from './LensesStorage';
-import type { Lens } from './types';
+import type { TopLevelLens } from './types';
 
 export interface UseLensProps<TFieldValues extends FieldValues = FieldValues> {
   control: Control<TFieldValues>;
@@ -26,7 +26,7 @@ export interface UseLensProps<TFieldValues extends FieldValues = FieldValues> {
 export function useLens<TFieldValues extends FieldValues = FieldValues>(
   props: UseLensProps<TFieldValues>,
   deps: DependencyList = [],
-): Lens<TFieldValues> {
+): TopLevelLens<TFieldValues> {
   return useMemo(() => {
     const cache = new LensesStorage(props.control);
     const lens = LensCore.create<TFieldValues>(props.control, cache);

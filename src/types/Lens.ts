@@ -1,7 +1,7 @@
 import type { FieldValues } from 'react-hook-form';
 
 import type { ArrayLens } from './ArrayLens';
-import type { HookFormControlShim, LensInterop } from './Interop';
+import type { HookFormControlShim, LensInterop, TopLevelLensInterop } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
 
@@ -28,6 +28,7 @@ export type LensSelector<T> = T extends any[]
  * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
  */
 export type Lens<T> = LensInterop<Exclude<T, null | undefined>> & LensSelector<T>;
+export type TopLevelLens<T extends FieldValues> = TopLevelLensInterop<Exclude<T, null | undefined>> & LensSelector<T>;
 
 export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;
