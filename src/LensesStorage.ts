@@ -19,9 +19,12 @@ export class LensesStorage<T extends FieldValues> {
 
   constructor(control: Control<T>) {
     this.cache = new Map();
-
-    control?._subjects?.values?.subscribe?.({
-      next: () => {
+    control._subscribe({
+      formState: {
+        values: true,
+      },
+      exact: true,
+      callback: () => {
         control._names.unMount.forEach((name) => {
           this.delete(name);
         });
