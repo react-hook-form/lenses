@@ -59,7 +59,7 @@
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17 || ^18 || ^19",
-    "react-hook-form": "^7.0.0"
+    "react-hook-form": "^7.55.0"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^8.6.12",
