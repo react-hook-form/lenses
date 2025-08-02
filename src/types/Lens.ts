@@ -24,6 +24,29 @@ export type LensSelector<T> = [T] extends [any[]]
         : PrimitiveLens<T>;
 
 /**
+ * Makes `Lens<T>` behave covariantly with respect to its value type `T`.
+ *
+ * Why is this needed?
+ * TypeScript treats generic parameters in **intersection** types as
+ * invariant.  A lens therefore keeps its exact value-type, but that also
+ * means `Lens<Dog>` is NOT assignable to `Lens<Dog | Cat>`.
+ *
+ * Trick:
+ * 1.  Keep the precise interop arm — `LensInterop<Exclude<T, null | undefined>>`
+ *     so APIs like `useController(lens.interop())` still infer the exact
+ *     field value type.
+ * 2.  Add a second, *widened* arm — `LensInterop<any>`.
+ *     Because intersections are **structural**, this extra property list
+ *     makes the whole type compatible with any broader union while not
+ *     changing runtime behaviour (both arms describe the same shape).
+ *
+ * Result: `Lens<Dog>`   ⊑  `Lens<Dog | Cat>`
+ *         yet `lens.interop()` still returns `Control<Dog>` rather than
+ *         `Control<any>`.
+ */
+type CovariantLensInterop<T> = LensInterop<Exclude<T, null | undefined>> & LensInterop<any>;
+
+/**
  * This is a type that allows you to hold the type of a form element.
  *
  * ```ts
@@ -35,7 +58,7 @@ export type LensSelector<T> = [T] extends [any[]]
  * In runtime it has `control` and `name` to use latter in react-hook-form.
  * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
  */
-export type Lens<T> = LensInterop<Exclude<T, null | undefined>> & LensSelector<T>;
+export type Lens<T> = CovariantLensInterop<T> & LensSelector<T>;
 
 export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;

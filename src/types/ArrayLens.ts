@@ -145,8 +145,5 @@ export interface ArrayLens<T extends any[]> {
    * }
    * ```
    */
-  interop(): LensInteropTransformerBinding<
-    HookFormControlShim<Exclude<T, null | undefined>>,
-    ShimKeyName extends FieldArrayPath<HookFormControlShim<Exclude<T, null | undefined>>> ? ShimKeyName : never
-  >;
+  interop(): LensInteropBinding<HookFormControlShim<Exclude<T, null | undefined>>, ShimKeyName>;
 }

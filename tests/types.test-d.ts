@@ -81,3 +81,60 @@ test('lens can handle optional fields', () => {
   stringOrUndefined({ lens: value });
   stringOrUndefined({ lens: valueOrUndefined });
 });
+
+test('should support union types', () => {
+  interface Dog {
+    type: 'dog';
+    value: { canBark: boolean };
+  }
+
+  interface Cat {
+    type: 'cat';
+    value: { canMeow: boolean };
+  }
+
+  const form = useForm<Dog>();
+  const lens = useLens({ control: form.control });
+
+  expectTypeOf<UnwrapLens<typeof lens>>().toEqualTypeOf<Dog>();
+
+  function check(props: { lens: Lens<Dog | Cat> }) {
+    const lensType = props.lens.focus('type');
+    expectTypeOf<UnwrapLens<typeof lensType>>().toEqualTypeOf<'dog' | 'cat'>();
+
+    return props;
+  }
+
+  check({ lens });
+});
+
+test('should allow focusing all fields in union type', () => {
+  interface Dog {
+    type: 'dog';
+    value: { canBark: boolean };
+  }
+
+  interface Cat {
+    type: 'cat';
+    value: { canMeow: boolean };
+  }
+
+  const form = useForm<Dog>();
+  const lens = useLens({ control: form.control });
+
+  function check(props: { lens: Lens<Dog | Cat> }) {
+    const typeLens = props.lens.focus('type');
+    const valueLens = props.lens.focus('value');
+    const canBarkLens = props.lens.focus('value.canBark');
+    const canMeowLens = props.lens.focus('value.canMeow');
+
+    expectTypeOf<UnwrapLens<typeof typeLens>>().toEqualTypeOf<'dog' | 'cat'>();
+    expectTypeOf<UnwrapLens<typeof valueLens>>().toEqualTypeOf<{ canBark: boolean } | { canMeow: boolean }>();
+    expectTypeOf<UnwrapLens<typeof canBarkLens>>().toEqualTypeOf<boolean>();
+    expectTypeOf<UnwrapLens<typeof canMeowLens>>().toEqualTypeOf<boolean>();
+
+    return props;
+  }
+
+  check({ lens });
+});
