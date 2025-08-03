@@ -5,6 +5,24 @@ import type { HookFormControlShim } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
 
+export interface LensBase<T> {
+  assert: T;
+}
+
+/**
+ * This is a type that allows you to hold the type of a form element.
+ *
+ * ```ts
+ * type LensWithArray = Lens<string[]>;
+ * type LensWithObject = Lens<{ name: string; age: number }>;
+ * type LensWithPrimitive = Lens<string>;
+ * ```
+ *
+ * In runtime it has `control` and `name` to use latter in react-hook-form.
+ * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
+ */
+export type Lens<T> = LensBase<Exclude<T, null | undefined>> & LensSelector<T>;
+
 /**
  * Why not use `T extends any[] ...`, instead of `[T] extends [any[]]`?:
  * Because of @see {@link https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-8.html#distributive-conditional-types}
@@ -22,21 +40,6 @@ export type LensSelector<T> = [T] extends [any[]]
       : [T] extends [null | undefined]
         ? never
         : PrimitiveLens<T>;
-
-/**
- * This is a type that allows you to hold the type of a form element.
- *
- * ```ts
- * type LensWithArray = Lens<string[]>;
- * type LensWithObject = Lens<{ name: string; age: number }>;
- * type LensWithPrimitive = Lens<string>;
- * ```
- *
- * In runtime it has `control` and `name` to use latter in react-hook-form.
- * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
- */
-
-export type Lens<T> = { assert: boolean } & LensSelector<T>;
 
 export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;
