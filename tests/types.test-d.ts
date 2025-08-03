@@ -145,3 +145,49 @@ test('should preserver string literal types', () => {
 
   expectTypeOf<UnwrapLens<typeof lens>>().toEqualTypeOf<{ value: 'a' | 'b' | 'c' }>();
 });
+
+test('narrow should return a lens narrowed to chosen union member', () => {
+  interface Dog {
+    type: 'dog';
+    value: { canBark: boolean };
+  }
+  interface Cat {
+    type: 'cat';
+    value: { canMeow: boolean };
+  }
+
+  const unionLens: Lens<Dog | Cat> = {} as any;
+
+  const dogLens = unionLens.narrow('type', 'dog');
+  expectTypeOf<typeof dogLens>().toEqualTypeOf<Lens<Dog>>();
+
+  const catLens = unionLens.narrow('type', 'cat');
+  expectTypeOf<typeof catLens>().toEqualTypeOf<Lens<Cat>>();
+});
+
+test('assert should act as a type guard and narrow the current lens', () => {
+  interface Dog {
+    type: 'dog';
+    value: { canBark: boolean };
+  }
+  interface Cat {
+    type: 'cat';
+    value: { canMeow: boolean };
+  }
+
+  const lens: Lens<Dog | Cat> = {} as any;
+
+  function treatCat(l: Lens<Cat>) {
+    return l;
+  }
+
+  // Branching runtime check to mimic real usage
+  function handleUnion(u: 'dog' | 'cat') {
+    if (u === 'cat') {
+      lens.assert('type', 'cat');
+      treatCat(lens); // should compile
+    }
+  }
+
+  handleUnion('cat');
+});

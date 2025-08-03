@@ -150,8 +150,8 @@ function AnimalFields({ lens }: { lens: Lens<AnimalValues> }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Select label="Animal" lens={lens.focus('type')} options={animalOptions} />
 
-      {selectedType.type === 'dog' ? <DogFields lens={lens as Lens<DogValues>} /> : null}
-      {selectedType.type === 'cat' ? <CatFields lens={lens as Lens<CatValues>} /> : null}
+      {selectedType.type === 'dog' ? <DogFields lens={lens.narrow('type', 'dog')} /> : null}
+      {selectedType.type === 'cat' ? (lens.assert('type', selectedType.type), (<CatFields lens={lens} />)) : null}
     </div>
   );
 }

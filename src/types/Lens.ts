@@ -4,10 +4,10 @@ import type { ArrayLens } from './ArrayLens';
 import type { HookFormControlShim } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
+import type { Toolkit } from './toolkit';
 
-export interface LensBase<T> {
-  assert: T;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface LensBase<T> extends Toolkit<T> {}
 
 /**
  * This is a type that allows you to hold the type of a form element.
