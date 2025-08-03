@@ -138,3 +138,10 @@ test('should allow focusing all fields in union type', () => {
 
   check({ lens });
 });
+
+test('should preserver string literal types', () => {
+  const form = useForm<{ value: 'a' | 'b' | 'c' }>();
+  const lens = useLens({ control: form.control });
+
+  expectTypeOf<UnwrapLens<typeof lens>>().toEqualTypeOf<{ value: 'a' | 'b' | 'c' }>();
+});
