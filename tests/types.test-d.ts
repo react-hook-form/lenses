@@ -191,3 +191,16 @@ test('assert should act as a type guard and narrow the current lens', () => {
 
   handleUnion('cat');
 });
+
+test('generic narrow for primitive union', () => {
+  const maybe: Lens<string | undefined> = {} as any;
+  const defined = maybe.narrow<string>();
+  expectTypeOf<typeof defined>().toEqualTypeOf<Lens<string>>();
+});
+
+test('generic assert for primitive union', () => {
+  const maybe: Lens<string | undefined> = {} as any;
+  function needsString(l: Lens<string>) {}
+  maybe.assert<string>();
+  needsString(maybe); // should compile when assert works
+});
