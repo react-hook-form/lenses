@@ -78,7 +78,7 @@ jobs:
             require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
           "
 
-          # Publish with bun
+          # Publish with bun (uses NPM_CONFIG_TOKEN env var automatically)
           bun publish --tag next --access public
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
