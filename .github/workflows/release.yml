@@ -96,3 +96,6 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
+          GITHUB_REF: refs/heads/${{ github.head_ref }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_BASE_REF: ""
