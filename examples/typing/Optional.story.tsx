@@ -23,6 +23,7 @@ interface FormValues {
 interface PlaygroundProps {
   onSubmit: SubmitHandler<FormValues>;
 }
+
 function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
   const { handleSubmit, control } = useForm<FormValues>();
   const lens = useLens({ control });
