@@ -59,24 +59,26 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Debug branch info
+      - name: Create semantic-release config
         run: |
-          echo "github.head_ref: ${{ github.head_ref }}"
-          echo "github.ref: ${{ github.ref }}"
-          echo "GITHUB_REF: $GITHUB_REF"
+          cat > .releaserc.json << 'EOF'
+          {
+            "branches": [
+              {"name": "main"},
+              {"name": "${{ github.head_ref }}", "channel": "next", "prerelease": true}
+            ],
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/npm"
+            ]
+          }
+          EOF
+
+      - name: Debug config
+        run: cat .releaserc.json
 
       - name: Publish Next Version
-        run: |
-          BRANCH_NAME="${{ github.head_ref }}"
-          if [ -z "$BRANCH_NAME" ]; then
-            BRANCH_NAME="types-rework"
-          fi
-          echo "Using branch: $BRANCH_NAME"
-
-          bunx semantic-release \
-            --no-ci \
-            --branches "[{\"name\": \"main\"}, {\"name\": \"$BRANCH_NAME\", \"channel\": \"next\", \"prerelease\": true}]" \
-            --plugins '@semantic-release/commit-analyzer,@semantic-release/npm'
+        run: bunx semantic-release --no-ci
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
