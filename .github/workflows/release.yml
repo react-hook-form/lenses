@@ -61,57 +61,24 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Configure Git
+      - name: Generate canary version and publish
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          # Generate unique canary version
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          CURRENT_DATE=$(date +%Y%m%d)
+          SHORT_COMMIT=$(git rev-parse --short HEAD)
+          CANARY_VERSION="0.0.0-canary-${PR_NUMBER}-${CURRENT_DATE}-${SHORT_COMMIT}"
 
-      - name: Create semantic-release config
-        run: |
-          cat > .releaserc.json << 'EOF'
-          {
-            "branches": [
-              {"name": "main"},
-              {"name": "${{ github.head_ref }}", "channel": "next", "prerelease": true}
-            ],
-            "plugins": [
-              "@semantic-release/commit-analyzer",
-              "@semantic-release/npm"
-            ]
-          }
-          EOF
+          echo "Publishing canary version: ${CANARY_VERSION}"
 
-      - name: Publish Next Version
-        run: |
-          # Force git to think we're on the actual branch
-          git checkout -b ${{ github.head_ref }} || git checkout ${{ github.head_ref }}
-          echo "Current branch after checkout: $(git branch --show-current)"
+          # Update package.json version using bun
+          bun --bun -e "
+            const pkg = JSON.parse(require('fs').readFileSync('./package.json', 'utf8'));
+            pkg.version = '${CANARY_VERSION}';
+            require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
 
-          # Create a config with main + prerelease branch (npm only, no git operations)
-          cat > .releaserc.json << EOF
-          {
-            "branches": [
-              "main",
-              {"name": "${{ github.head_ref }}", "channel": "next", "prerelease": true}
-            ],
-            "plugins": [
-              "@semantic-release/commit-analyzer",
-              ["@semantic-release/npm", {
-                "tarballDir": "dist/"
-              }]
-            ]
-          }
-          EOF
-
-          echo "Updated config:"
-          cat .releaserc.json
-
-          # Unset CI environment variables that might interfere
-          unset GITHUB_ACTIONS
-          unset CI
-
-          bunx semantic-release --no-ci --debug
+          # Publish with bun
+          bun publish --tag next --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
