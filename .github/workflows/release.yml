@@ -92,10 +92,27 @@ jobs:
           git checkout -b ${{ github.head_ref }} || git checkout ${{ github.head_ref }}
           echo "Current branch after checkout: $(git branch --show-current)"
 
-          bunx semantic-release --no-ci
+          # Create a simple config that only targets this branch
+          cat > .releaserc.json << EOF
+          {
+            "branches": [
+              {"name": "${{ github.head_ref }}", "channel": "next", "prerelease": true}
+            ],
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/npm"
+            ]
+          }
+          EOF
+
+          echo "Updated config:"
+          cat .releaserc.json
+
+          # Unset CI environment variables that might interfere
+          unset GITHUB_ACTIONS
+          unset CI
+
+          bunx semantic-release --no-ci --debug
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
-          GITHUB_REF: refs/heads/${{ github.head_ref }}
-          GITHUB_HEAD_REF: ${{ github.head_ref }}
-          GITHUB_BASE_REF: ""
