@@ -40,7 +40,7 @@ jobs:
 
   publish-next:
     name: Publish Next Version
-    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish-next')
+    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && contains(toJson(github.event.pull_request.labels), 'publish-next')
     runs-on: ubuntu-latest
     permissions:
       contents: write
