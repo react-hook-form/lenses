@@ -15,6 +15,10 @@ jobs:
     name: Release
     if: github.repository == 'react-hook-form/lenses' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,7 +33,37 @@ jobs:
         run: bun run build
 
       - name: Publish
-        run: bunx semantic-release
+        run: bunx semantic-release --branches main
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
+
+  publish-next:
+    name: Publish Next Version
+    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish-next')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Build
+        run: bun run build
+
+      - name: Publish Next Version
+        run: |
+          bunx semantic-release \
+            --branches '{"name": "*", "channel": "next", "prerelease": true}' \
+            --plugins '@semantic-release/commit-analyzer,@semantic-release/npm'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
