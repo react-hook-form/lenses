@@ -78,8 +78,21 @@ jobs:
       - name: Debug config
         run: cat .releaserc.json
 
+      - name: Debug git info
+        run: |
+          echo "Current branch: $(git branch --show-current)"
+          echo "Git status:"
+          git status
+          echo "Git log (last commit):"
+          git log -1 --oneline
+
       - name: Publish Next Version
-        run: bunx semantic-release --no-ci
+        run: |
+          # Force git to think we're on the actual branch
+          git checkout -b ${{ github.head_ref }} || git checkout ${{ github.head_ref }}
+          echo "Current branch after checkout: $(git branch --show-current)"
+
+          bunx semantic-release --no-ci
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
