@@ -62,7 +62,8 @@ jobs:
       - name: Publish Next Version
         run: |
           bunx semantic-release \
-            --branches '[{"name": "*", "channel": "next", "prerelease": true}]' \
+            --no-ci \
+            --branches '[{"name": "${{ github.head_ref }}", "channel": "next", "prerelease": true}]' \
             --plugins '@semantic-release/commit-analyzer,@semantic-release/npm'
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
