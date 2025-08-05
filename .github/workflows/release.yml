@@ -92,10 +92,11 @@ jobs:
           git checkout -b ${{ github.head_ref }} || git checkout ${{ github.head_ref }}
           echo "Current branch after checkout: $(git branch --show-current)"
 
-          # Create a simple config that only targets this branch
+          # Create a config with main + prerelease branch
           cat > .releaserc.json << EOF
           {
             "branches": [
+              "main",
               {"name": "${{ github.head_ref }}", "channel": "next", "prerelease": true}
             ],
             "plugins": [
