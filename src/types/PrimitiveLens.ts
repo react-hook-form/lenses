@@ -1,4 +1,4 @@
-import type { CovariantLensInterop } from './Interop';
+import type { LensInterop } from './Interop';
 import type { Lens, LensesGetter, UnwrapLens } from './Lens';
 
 export interface PrimitiveLensGetter<T, R> {
@@ -11,7 +11,7 @@ export interface PrimitiveLensGetter<T, R> {
   (dictionary: never, lens: Lens<T>): LensesGetter<R>;
 }
 
-export interface PrimitiveLens<T> extends CovariantLensInterop<T> {
+export interface PrimitiveLens<T> extends LensInterop<T> {
   /**
    * This method allows you to create a new lens with different shape.
    *

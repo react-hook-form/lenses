@@ -16,8 +16,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 interface FormValues {
-  name: string;
-  surname: string;
+  name?: string;
+  surname?: string;
 }
 
 interface PlaygroundProps {
@@ -30,7 +30,12 @@ function Playground({ onSubmit = action('submit') }: PlaygroundProps) {
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <UserProfile lens={lens} />
+        <UserProfile
+          lens={lens.narrow<{
+            name: string;
+            surname: string;
+          }>()}
+        />
         <input type="submit" />
       </form>
     </div>
@@ -47,8 +52,8 @@ function UserProfile({
   lens,
 }: {
   lens: Lens<{
-    name?: string;
-    surname: string | undefined | null;
+    name: string;
+    surname: string;
   }>;
 }) {
   return (
@@ -59,7 +64,7 @@ function UserProfile({
   );
 }
 
-function UserName({ lens }: { lens: Lens<string | undefined | null> }) {
+function UserName({ lens }: { lens: Lens<string> }) {
   const value = useWatch(lens.interop());
 
   if (value === undefined || value === null) {

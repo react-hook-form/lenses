@@ -78,6 +78,8 @@ test('lens can handle optional fields', () => {
   expectTypeOf<UnwrapLens<typeof valueOrUndefined>>().toEqualTypeOf<string | undefined>();
 
   stringOnly({ lens: value });
+  stringOnly({ lens: valueOrUndefined.defined() });
+  // @ts-expect-error - stringOrUndefined can set undefined value, so passed value should be ready for such type
   stringOrUndefined({ lens: value });
   stringOrUndefined({ lens: valueOrUndefined });
 });
@@ -93,19 +95,27 @@ test('should support union types', () => {
     value: { canMeow: boolean };
   }
 
-  const form = useForm<Dog>();
+  const form = useForm<Dog | Cat>();
   const lens = useLens({ control: form.control });
 
-  expectTypeOf<UnwrapLens<typeof lens>>().toEqualTypeOf<Dog>();
+  expectTypeOf<UnwrapLens<typeof lens>>().toEqualTypeOf<Dog | Cat>();
 
-  function check(props: { lens: Lens<Dog | Cat> }) {
+  function checkDog(props: { lens: Lens<Dog> }) {
     const lensType = props.lens.focus('type');
-    expectTypeOf<UnwrapLens<typeof lensType>>().toEqualTypeOf<'dog' | 'cat'>();
+    expectTypeOf<UnwrapLens<typeof lensType>>().toEqualTypeOf<'dog'>();
 
     return props;
   }
 
-  check({ lens });
+  function checkCat(props: { lens: Lens<Cat> }) {
+    const lensType = props.lens.focus('type');
+    expectTypeOf<UnwrapLens<typeof lensType>>().toEqualTypeOf<'cat'>();
+
+    return props;
+  }
+
+  checkDog({ lens: lens.narrow<Dog>() });
+  checkCat({ lens: lens.narrow<Cat>() });
 });
 
 test('should allow focusing all fields in union type', () => {
@@ -119,7 +129,7 @@ test('should allow focusing all fields in union type', () => {
     value: { canMeow: boolean };
   }
 
-  const form = useForm<Dog>();
+  const form = useForm<Dog | Cat>();
   const lens = useLens({ control: form.control });
 
   function check(props: { lens: Lens<Dog | Cat> }) {
@@ -200,7 +210,32 @@ test('generic narrow for primitive union', () => {
 
 test('generic assert for primitive union', () => {
   const maybe: Lens<string | undefined> = {} as any;
-  function needsString(l: Lens<string>) {}
+  function needsString(_l: Lens<string>) {}
   maybe.assert<string>();
   needsString(maybe); // should compile when assert works
+});
+
+test('should be able to narrow branded types', () => {
+  const EmailAddress = z.email().brand('EmailAddress');
+  type EmailAddress = z.infer<typeof EmailAddress>;
+
+  const FormSchema = z.object({ email: EmailAddress });
+  type FormValue = z.infer<typeof FormSchema>;
+  const { control } = useForm({ resolver: zodResolver(FormSchema) });
+  const lens = useLens({ control });
+
+  function check({ lens }: { lens: Lens<FormValue> }) {
+    return lens;
+  }
+
+  check({ lens });
+
+  const email = lens.focus('email');
+  expectTypeOf<typeof email>().toEqualTypeOf<Lens<string & z.core.$brand<'EmailAddress'>>>();
+
+  function checkString(props: { lens: Lens<string> }) {
+    return props;
+  }
+
+  checkString({ lens: email.cast<string>() });
 });
