@@ -44,6 +44,29 @@ export interface LensInteropFunction<T extends FieldValues, Name, R> {
 
 export interface LensInterop<T> {
   /**
+   * This method allows you to use `control` and `name` properties from react-hook-form in a callback.
+   *
+   * @example
+   * ```tsx
+   * function App() {
+   *   const { control, handleSubmit } = useForm<{
+   *     firstName: string;
+   *   }>();
+   *
+   *   const lens = useLens({ control });
+   *
+   *   return (
+   *     <form onSubmit={handleSubmit(console.log)}>
+   *       <input {...lens.focus('firstName').interop((ctrl, name) => ctrl.register(name))} />
+   *       <input type="submit" />
+   *     </form>
+   *   );
+   * }
+   * ```
+   */
+  interop<R>(callback: LensInteropFunction<HookFormControlShim<T>, ShimKeyName, R>): R;
+
+  /**
    * This method returns `name` and `control` properties from react-hook-form.
    *
    * @example
@@ -66,27 +89,4 @@ export interface LensInterop<T> {
    * ```
    */
   interop(): LensInteropBinding<HookFormControlShim<T>, ShimKeyName>;
-
-  /**
-   * This method allows you to use `control` and `name` properties from react-hook-form in a callback.
-   *
-   * @example
-   * ```tsx
-   * function App() {
-   *   const { control, handleSubmit } = useForm<{
-   *     firstName: string;
-   *   }>();
-   *
-   *   const lens = useLens({ control });
-   *
-   *   return (
-   *     <form onSubmit={handleSubmit(console.log)}>
-   *       <input {...lens.focus('firstName').interop((ctrl, name) => ctrl.register(name))} />
-   *       <input type="submit" />
-   *     </form>
-   *   );
-   * }
-   * ```
-   */
-  interop<R>(callback: LensInteropFunction<HookFormControlShim<T>, ShimKeyName, R>): R;
 }
