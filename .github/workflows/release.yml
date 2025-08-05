@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [labeled]
     paths-ignore:
       - '.gitignore'
       - '.npmignore'
@@ -40,7 +41,7 @@ jobs:
 
   publish-next:
     name: Publish Next Version
-    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && contains(toJson(github.event.pull_request.labels), 'publish-next')
+    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'publish-next'
     runs-on: ubuntu-latest
     permissions:
       contents: write
