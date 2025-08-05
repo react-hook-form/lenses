@@ -21,7 +21,7 @@ export interface LensBase<T> extends Toolkit<T> {}
  * In runtime it has `control` and `name` to use latter in react-hook-form.
  * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
  */
-export type Lens<T> = LensBase<Exclude<T, null | undefined>> & LensSelector<T>;
+export type Lens<T> = LensBase<T> & LensSelector<T>;
 
 /**
  * Why not use `T extends any[] ...`, instead of `[T] extends [any[]]`?:
