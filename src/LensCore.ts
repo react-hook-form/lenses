@@ -39,12 +39,6 @@ export class LensCore<T extends FieldValues> {
     const propString = prop.toString();
     const nestedPath = this.path ? `${this.path}.${propString}` : propString;
 
-    const fromCache = this.cache?.get(nestedPath);
-
-    if (fromCache) {
-      return fromCache;
-    }
-
     if (Array.isArray(this.override)) {
       const [template] = this.override;
       const result = new LensCore(this.control, nestedPath, this.cache);
@@ -72,6 +66,12 @@ export class LensCore<T extends FieldValues> {
         this.cache?.set(overriddenLens, nestedPath);
         return overriddenLens;
       }
+    }
+
+    const fromCache = this.cache?.get(nestedPath);
+
+    if (fromCache) {
+      return fromCache;
     }
 
     const result = new LensCore(this.control, nestedPath, this.cache);

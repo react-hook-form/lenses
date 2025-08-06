@@ -90,3 +90,17 @@ test('interop can hold the literal union value of the field', () => {
   expect(interop.interopName).toBe('type');
   expect(interop.interopControl).toBe(result.current.form.control);
 });
+
+test('interop return non cached name when override', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{ a: string; b: number }>();
+    const lens = useLens({ control: form.control });
+    const reflect = lens.reflect((l) => ({ a: l.b }));
+
+    // cache a
+    lens.focus('a');
+    return reflect;
+  });
+
+  expect(result.current.focus('a').interop().name).toEqual('b');
+});
