@@ -1,9 +1,27 @@
 import type { FieldValues } from 'react-hook-form';
 
 import type { ArrayLens } from './ArrayLens';
-import type { HookFormControlShim, LensInterop } from './Interop';
+import type { HookFormControlShim } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
+import type { Toolkit } from './toolkit';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface LensBase<T> extends Toolkit<T> {}
+
+/**
+ * This is a type that allows you to hold the type of a form element.
+ *
+ * ```ts
+ * type LensWithArray = Lens<string[]>;
+ * type LensWithObject = Lens<{ name: string; age: number }>;
+ * type LensWithPrimitive = Lens<string>;
+ * ```
+ *
+ * In runtime it has `control` and `name` to use latter in react-hook-form.
+ * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
+ */
+export type Lens<T> = LensBase<T> & LensSelector<T>;
 
 /**
  * Why not use `T extends any[] ...`, instead of `[T] extends [any[]]`?:
@@ -22,20 +40,6 @@ export type LensSelector<T> = [T] extends [any[]]
       : [T] extends [null | undefined]
         ? never
         : PrimitiveLens<T>;
-
-/**
- * This is a type that allows you to hold the type of a form element.
- *
- * ```ts
- * type LensWithArray = Lens<string[]>;
- * type LensWithObject = Lens<{ name: string; age: number }>;
- * type LensWithPrimitive = Lens<string>;
- * ```
- *
- * In runtime it has `control` and `name` to use latter in react-hook-form.
- * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
- */
-export type Lens<T> = LensInterop<Exclude<T, null | undefined>> & LensSelector<T>;
 
 export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;

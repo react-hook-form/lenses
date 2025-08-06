@@ -44,3 +44,22 @@ test('lens cannot be cache by function without useCallback', () => {
 
   expect(a).not.toBe(b);
 });
+
+test('interop return non cached name when override', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{ a: string; b: number }>();
+    const lens = useLens({ control: form.control });
+
+    return { lens };
+  });
+
+  const aLens = result.current.lens.focus('a');
+  const bLens = result.current.lens.focus('b');
+
+  expect(aLens.interop().name).toEqual('a');
+  expect(bLens.interop().name).toEqual('b');
+
+  const reflect = result.current.lens.reflect((l) => ({ a: l.b }));
+
+  expect(reflect.focus('a').interop().name).toEqual('b');
+});
