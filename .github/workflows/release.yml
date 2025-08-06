@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, labeled]
     paths-ignore:
       - '.gitignore'
       - '.npmignore'
@@ -40,7 +41,7 @@ jobs:
 
   publish-next:
     name: Publish Next Version
-    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish-next')
+    if: github.repository == 'react-hook-form/lenses' && github.event_name == 'pull_request' && github.event.action == 'labeled' && github.event.label.name == 'publish-next'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -59,11 +60,24 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Publish Next Version
+      - name: Generate canary version and publish
         run: |
-          bunx semantic-release \
-            --branches '{"name": "*", "channel": "next", "prerelease": true}' \
-            --plugins '@semantic-release/commit-analyzer,@semantic-release/npm'
+          # Generate unique canary version
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          CURRENT_DATE=$(date +%Y%m%d)
+          SHORT_COMMIT=$(git rev-parse --short HEAD)
+          CANARY_VERSION="0.0.0-canary-${PR_NUMBER}-${CURRENT_DATE}-${SHORT_COMMIT}"
+
+          echo "Publishing canary version: ${CANARY_VERSION}"
+
+          # Update package.json version using bun
+          bun --bun -e "
+            const pkg = JSON.parse(require('fs').readFileSync('./package.json', 'utf8'));
+            pkg.version = '${CANARY_VERSION}';
+            require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          # Publish with bun (uses NPM_CONFIG_TOKEN env var automatically)
+          bun publish --tag next --access public
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: '${{secrets.GITHUB_TOKEN}}'
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
