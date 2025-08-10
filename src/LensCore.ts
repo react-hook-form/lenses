@@ -18,9 +18,7 @@ export class LensCore<T extends FieldValues> {
   public path: string;
   public cache?: LensesStorage<T> | undefined;
 
-  private isArrayItemReflection?: boolean;
-  private override?: Record<string, LensCore<T>> | [Record<string, LensCore<T>>];
-  private interopCache?: LensCoreInteropBinding<T>;
+  protected reflectedKey?: LensesStorageComplexKey;
 
   constructor(control: Control<T>, path: string, cache?: LensesStorage<T> | undefined) {
     this.control = control;
@@ -39,7 +37,7 @@ export class LensCore<T extends FieldValues> {
     const propString = prop.toString();
     const nestedPath = this.path ? `${this.path}.${propString}` : propString;
 
-    const fromCache = this.cache?.get(nestedPath);
+    const fromCache = this.cache?.get(nestedPath, this.reflectedKey);
 
     if (fromCache) {
       return fromCache;
@@ -112,11 +110,13 @@ export class LensCore<T extends FieldValues> {
       const result = new LensCore(this.control, this.path, this.cache);
       template.path = '';
       result.override = getter(dictionary, template);
+      result.reflectedKey = getter;
       this.cache?.set(result, this.path, getter);
       return result;
     } else {
       template.override = override;
       template.path = this.path;
+      template.reflectedKey = getter;
       this.cache?.set(template, this.path, getter);
       return template;
     }
