@@ -15,7 +15,7 @@ export type LensCache<T extends FieldValues> = Map<string, LensesStorageValue<T>
  * Cache storage for lenses.
  */
 export class LensesStorage<T extends FieldValues> {
-  private cache: LensCache<T>;
+  protected cache: LensCache<T>;
 
   constructor(control: Control<T>) {
     this.cache = new Map();

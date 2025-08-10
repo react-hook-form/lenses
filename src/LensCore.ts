@@ -1,6 +1,6 @@
 import { type Control, type FieldValues, get, set } from 'react-hook-form';
 
-import type { LensesStorage } from './LensesStorage';
+import type { LensesStorage, LensesStorageComplexKey } from './LensesStorage';
 import type { Lens } from './types';
 
 export interface LensCoreInteropBinding<T extends FieldValues> {
@@ -18,6 +18,9 @@ export class LensCore<T extends FieldValues> {
   public path: string;
   public cache?: LensesStorage<T> | undefined;
 
+  protected isArrayItemReflection?: boolean;
+  protected override?: Record<string, LensCore<T>> | [Record<string, LensCore<T>>];
+  protected interopCache?: LensCoreInteropBinding<T>;
   protected reflectedKey?: LensesStorageComplexKey;
 
   constructor(control: Control<T>, path: string, cache?: LensesStorage<T> | undefined) {
@@ -170,7 +173,7 @@ export class LensCore<T extends FieldValues> {
     return newValue;
   }
 
-  private setTransformer(value: unknown): unknown {
+  protected setTransformer(value: unknown): unknown {
     const [template] = Array.isArray(this.override) ? this.override : [this.override];
 
     if (!value || !template) {
