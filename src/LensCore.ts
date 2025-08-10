@@ -150,7 +150,23 @@ export class LensCore<T extends FieldValues> {
     return this.interopCache;
   }
 
-  private getTransformer(value: unknown): unknown {
+  public narrow(): this {
+    return this;
+  }
+
+  public assert(): this {
+    return this;
+  }
+
+  public defined(): this {
+    return this;
+  }
+
+  public cast(): this {
+    return this;
+  }
+
+  protected getTransformer(value: unknown): unknown {
     const [template] = Array.isArray(this.override) ? this.override : [this.override];
 
     if (!value || !template) {

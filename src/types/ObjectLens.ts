@@ -1,5 +1,6 @@
 import type { Path, PathValue } from 'react-hook-form';
 
+import type { LensInterop } from './Interop';
 import type { Lens, LensesDictionary, LensesGetter, UnwrapLens } from './Lens';
 
 export interface ObjectLensGetter<T, R> {
@@ -12,7 +13,7 @@ export interface ObjectLensGetter<T, R> {
   (dictionary: LensesDictionary<T>, lens: Lens<T>): LensesGetter<R>;
 }
 
-export interface ObjectLens<T> {
+export interface ObjectLens<T> extends LensInterop<T> {
   /**
    * This method allows you to create a new lens that focuses on a specific field in the form.
    *
