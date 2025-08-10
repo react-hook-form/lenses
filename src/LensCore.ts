@@ -140,7 +140,7 @@ export class LensCore<T extends FieldValues> {
 
     this.interopCache ??= {
       control: this.control,
-      name: this.path,
+      name: this.path || undefined,
       ...(this.override ? { getTransformer: this.getTransformer.bind(this), setTransformer: this.setTransformer.bind(this) } : {}),
     };
 
