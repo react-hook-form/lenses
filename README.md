@@ -93,3 +93,19 @@ function StringInput({ lens }: { lens: Lens<string> }) {
   return <input {...lens.interop((ctrl, name) => ctrl.register(name))} />;
 }
 ```
+
+## No goals
+
+The aim of lenses is to serve as a carrier for control and name information. It should provide good approaches for manipulating types and describing form structure, but it is not supposed to manipulate actual values inside the form.
+
+### No setters and getters
+
+This library intentionally does not provide setter and getter methods for lens values. While these might seem convenient, they can lead to unexpected bugs when developers read a value expecting it to be reactive, but it's not due to the nature of React Hook Form. Instead, use React Hook Form's standard hooks and patterns.
+
+### Do not operate values directly
+
+Do not operate values directly from form state because components could get stuck since these values are not reactive. Instead, consume the actual values from appropriate hooks like `useWatch` and pass them into props.
+
+## Known Issues
+
+Read more in the [React Hook Form compatibility issues](https://github.com/react-hook-form/react-hook-form/issues/13009).
