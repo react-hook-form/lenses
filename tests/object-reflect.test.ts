@@ -62,7 +62,7 @@ test('reflect can add props from another lens', () => {
 });
 
 
-test('reflex return an object contains Date, File, FileList', () => {
+test('reflect return an object contains Date, File, FileList', () => {
   const { result } = renderHook(() => {
     const form = useForm<{ date: Date; file: File; fileList: FileList }>();
     const lens = useLens({ control: form.control });
