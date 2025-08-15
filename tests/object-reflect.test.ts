@@ -61,7 +61,6 @@ test('reflect can add props from another lens', () => {
   expectTypeOf(form1.current.reflect((l) => ({ c: l.a, d: form2.current.focus('b') }))).toEqualTypeOf<Lens<{ c: string; d: number }>>();
 });
 
-
 test('reflect return an object contains Date, File, FileList', () => {
   const { result } = renderHook(() => {
     const form = useForm<{ date: Date; file: File; fileList: FileList }>();
