@@ -1,4 +1,4 @@
-import type { FieldValues } from 'react-hook-form';
+import type { BrowserNativeObject, FieldValues } from 'react-hook-form';
 
 import type { ArrayLens } from './ArrayLens';
 import type { HookFormControlShim } from './Interop';
@@ -47,8 +47,9 @@ export type LensesDictionary<T> = {
 
 export type LensesGetter<T> = LensesDictionary<T> | Lens<T>;
 
-export type UnwrapLens<T> =
-  T extends HookFormControlShim<any>
+export type UnwrapLens<T> = T extends BrowserNativeObject
+  ? T
+  : T extends HookFormControlShim<any>
     ? unknown
     : T extends (infer U)[]
       ? UnwrapLens<U>[]
