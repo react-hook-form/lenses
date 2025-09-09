@@ -88,3 +88,138 @@ test('reflect return an object contains Date, File, FileList', () => {
     }>
   >();
 });
+
+test('basic lens focus with dot notation works correctly', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{
+      password: { password: string; passwordConfirm: string };
+      usernameNest: { name: string };
+    }>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  expect(lens.focus('password.password').interop().name).toBe('password.password');
+  expect(lens.focus('usernameNest.name').interop().name).toBe('usernameNest.name');
+});
+
+test('reflected lens with chained focus calls works correctly', () => {
+  type Input = {
+    name: string;
+    password: {
+      password: string;
+      passwordConfirm: string;
+    };
+    usernameNest: {
+      name: string;
+    };
+  };
+
+  type DataLens = {
+    userName: string;
+    password: {
+      password_base: string;
+      password_confirm: string;
+    };
+    nest2: {
+      names: {
+        name: string;
+      };
+    };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflected: Lens<DataLens> = lens.reflect((dic, l) => ({
+    userName: dic.name,
+    password: lens.focus('password').reflect<DataLens['password']>((pas) => ({
+      password_base: pas.password,
+      password_confirm: pas.passwordConfirm,
+    })),
+    nest2: lens.reflect<DataLens['nest2']>(() => ({
+      names: l.focus('usernameNest'),
+    })),
+  }));
+
+  expect(reflected.focus('password').focus('password_base').interop().name).toBe('password.password');
+  expect(reflected.focus('password').focus('password_confirm').interop().name).toBe('password.passwordConfirm');
+  expect(reflected.focus('nest2').focus('names').focus('name').interop().name).toBe('usernameNest.name');
+});
+
+test('reflected lens with dot notation resolves correct paths', () => {
+  type Input = {
+    password: {
+      password: string;
+      passwordConfirm: string;
+    };
+    usernameNest: {
+      name: string;
+    };
+  };
+
+  type DataLens = {
+    password: {
+      password_base: string;
+      password_confirm: string;
+    };
+    nest2: {
+      names: {
+        name: string;
+      };
+    };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflected: Lens<DataLens> = lens.reflect((_, l) => ({
+    password: lens.focus('password').reflect<DataLens['password']>((pas) => ({
+      password_base: pas.password,
+      password_confirm: pas.passwordConfirm,
+    })),
+    nest2: lens.reflect<DataLens['nest2']>(() => ({
+      names: l.focus('usernameNest'),
+    })),
+  }));
+
+  expect(reflected.focus('password.password_base').interop().name).toBe('password.password');
+  expect(reflected.focus('password.password_confirm').interop().name).toBe('password.passwordConfirm');
+  expect(reflected.focus('nest2.names.name').interop().name).toBe('usernameNest.name');
+});
+
+test('reflected lens handles duplicate key names in different nesting levels', () => {
+  type Input = {
+    id: string;
+    nest: {
+      id: string;
+    };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflectedWithDuplicateKeys = lens.reflect((_, l) => ({
+    id: l.focus('id'),
+    nest_id: l.focus('nest').focus('id'),
+  }));
+
+  expect(reflectedWithDuplicateKeys.focus('nest_id').interop().name).toBe('nest.id');
+});
