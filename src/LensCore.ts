@@ -1,6 +1,6 @@
 import { type Control, type FieldValues, get, set } from 'react-hook-form';
 
-import type { LensesStorage, LensesStorageComplexKey } from './LensesStorage';
+import { LensesStorage, type LensesStorageComplexKey } from './LensesStorage';
 import type { Lens } from './types';
 
 export interface LensCoreInteropBinding<T extends FieldValues> {
@@ -38,6 +38,15 @@ export class LensCore<T extends FieldValues> {
 
   public focus(prop: string | number): LensCore<T> {
     const propString = prop.toString();
+
+    if (typeof prop === 'string' && prop.includes('.')) {
+      const dotIndex = prop.indexOf('.');
+      const firstSegment = prop.slice(0, dotIndex);
+      const remainingPath = prop.slice(dotIndex + 1);
+
+      return this.focus(firstSegment).focus(remainingPath);
+    }
+
     const nestedPath = this.path ? `${this.path}.${propString}` : propString;
 
     const fromCache = this.cache?.get(nestedPath, this.reflectedKey);
@@ -92,7 +101,8 @@ export class LensCore<T extends FieldValues> {
       return fromCache;
     }
 
-    const template = new LensCore(this.control, this.path, this.cache);
+    const nestedCache = new LensesStorage(this.control);
+    const template = new LensCore(this.control, this.path, nestedCache);
 
     const dictionary = new Proxy(
       {},
