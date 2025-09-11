@@ -23,6 +23,10 @@ export class LensCore<T extends FieldValues> {
   protected interopCache?: LensCoreInteropBinding<T>;
   protected reflectedKey?: LensesStorageComplexKey;
 
+  public isLens(value: unknown): value is LensCore<T> {
+    return value instanceof this.constructor;
+  }
+
   constructor(control: Control<T>, path: string, cache?: LensesStorage<T> | undefined) {
     this.control = control;
     this.path = path;
@@ -65,9 +69,15 @@ export class LensCore<T extends FieldValues> {
 
       return result;
     } else if (this.override) {
-      const overriddenLens: LensCore<T> | undefined = get(this.override, propString);
+      const overriddenLensOrNested: LensCore<T> | Record<string, LensCore<T>> | undefined = get(this.override, propString);
 
-      if (!overriddenLens) {
+      let overriddenLens: LensCore<T> | undefined;
+
+      if (this.isLens(overriddenLensOrNested)) {
+        overriddenLens = overriddenLensOrNested;
+      } else if (overriddenLensOrNested) {
+        overriddenLens = this.reflect(() => overriddenLensOrNested);
+      } else {
         const result = new LensCore(this.control, nestedPath, this.cache);
         this.cache?.set(result, nestedPath);
         return result;
