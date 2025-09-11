@@ -45,7 +45,10 @@ export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;
 };
 
-export type LensesGetter<T> = LensesDictionary<T> | Lens<T>;
+export type RecursiveLensesDictionary<T> = {
+  [P in keyof T]: Lens<T[P]> | RecursiveLensesDictionary<T[P]>;
+}
+export type LensesGetter<T> = RecursiveLensesDictionary<T> | Lens<T>;
 
 export type UnwrapLens<T> = T extends BrowserNativeObject
   ? T
