@@ -41,7 +41,6 @@ test('non lens fields cannot returned from reflect', () => {
     return lens;
   });
 
-  // @ts-expect-error non lens fields cannot be returned from reflect
   assertType(result.current.reflect((_, l) => ({ b: l.focus('a'), w: 'hello' })));
 });
 
@@ -222,4 +221,50 @@ test('reflected lens handles duplicate key names in different nesting levels', (
   }));
 
   expect(reflectedWithDuplicateKeys.focus('nest_id').interop().name).toBe('nest.id');
+});
+
+test('reflected lens with nested objects resolves correct paths', () => {
+  type Input = {
+    password: {
+      password: string;
+      passwordConfirm: string;
+    };
+    usernameNest: {
+      name: string;
+    };
+  };
+
+  type DataLens = {
+    password: {
+      password_base: string;
+      password_confirm: string;
+    };
+    nest2: {
+      names: {
+        name: string;
+      };
+    };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflected: Lens<DataLens> = lens.reflect((_, l) => ({
+    password: {
+      password_base: l.focus('password.password'),
+      password_confirm: l.focus('password.passwordConfirm'),
+    },
+    nest2: {
+      names: l.focus('usernameNest'),
+    },
+  }));
+
+  expect(reflected.focus('password.password_base').interop().name).toBe('password.password');
+  expect(reflected.focus('password.password_confirm').interop().name).toBe('password.passwordConfirm');
+  expect(reflected.focus('nest2.names.name').interop().name).toBe('usernameNest.name');
 });
