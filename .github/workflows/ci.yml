@@ -23,6 +23,19 @@ jobs:
       - name: Prettier
         run: bun prettier
 
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup environment
+        uses: ./.github/actions/setup
+
+      - name: Run typecheck
+        run: bun typecheck
+
   test-unit:
     name: Test Unit
     runs-on: ubuntu-latest
