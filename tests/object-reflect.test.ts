@@ -334,3 +334,27 @@ test('nested object reflect does not append paths', () => {
 
   expect(reflected.focus('x.y').interop().name).toBe('a.b.c');
 });
+
+test('multiple nested reflect calls preserve correct path', () => {
+  const { result } = renderHook(() => {
+    const form = useForm<{ values: { a: string } }>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflected = lens.focus('values').reflect((_, l) => {
+    return {
+      nested: {
+        deeper: {
+          field: l.focus('a'),
+        },
+      },
+    };
+  });
+
+  expect(reflected.focus('nested').interop().name).toBe('values');
+  expect(reflected.focus('nested.deeper').interop().name).toBe('values');
+  expect(reflected.focus('nested.deeper.field').interop().name).toBe('values.a');
+});
