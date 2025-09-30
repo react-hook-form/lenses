@@ -335,7 +335,7 @@ test('nested object reflect does not append paths', () => {
   expect(reflected.focus('x.y').interop().name).toBe('a.b.c');
 });
 
-test('multiple nested reflect calls preserve correct path', () => {
+test('reflect with nested object preserve correct path', () => {
   const { result } = renderHook(() => {
     const form = useForm<{ values: { a: string } }>();
     const lens = useLens({ control: form.control });
