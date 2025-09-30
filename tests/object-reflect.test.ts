@@ -268,3 +268,69 @@ test('reflected lens with nested objects resolves correct paths', () => {
   expect(reflected.focus('password.password_confirm').interop().name).toBe('password.passwordConfirm');
   expect(reflected.focus('nest2.names.name').interop().name).toBe('usernameNest.name');
 });
+
+test('reflected lenses without focus do not append paths', () => {
+  type Input = {
+    a: {
+      b: {
+        c: string;
+      };
+    };
+  };
+
+  type Result = {
+    x: {
+      y: string;
+    };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflected: Lens<Result> = lens.reflect((_, l) => ({
+    x: l.reflect((_, l2) => {
+      return {
+        y: l2.focus('a.b.c'),
+      };
+    }),
+  }));
+
+  expect(reflected.focus('x.y').interop().name).toBe('a.b.c');
+});
+
+test('nested object reflect does not append paths', () => {
+  type Input = {
+    a: {
+      b: {
+        c: string;
+      };
+    };
+  };
+
+  type Result = {
+    x: {
+      y: string;
+    };
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflected: Lens<Result> = lens.reflect((_, l) => ({
+    x: {
+      y: l.focus('a.b.c'),
+    },
+  }));
+
+  expect(reflected.focus('x.y').interop().name).toBe('a.b.c');
+});
