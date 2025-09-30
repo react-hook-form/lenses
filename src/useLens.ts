@@ -6,7 +6,7 @@ import { LensesStorage } from './LensesStorage';
 import type { Lens } from './types';
 
 export interface UseLensProps<TFieldValues extends FieldValues = FieldValues> {
-  control: Control<any, any, TFieldValues>;
+  control: Control<TFieldValues, any, any>;
 }
 
 /**
