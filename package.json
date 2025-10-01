@@ -54,7 +54,8 @@
     "prettier:fix": "prettier --write '**/*.md'",
     "storybook": "storybook dev -p 6006",
     "typecheck": "tsc --noEmit",
-    "test": "vitest watch",
+    "test": "vitest",
+    "test:watch": "vitest watch",
     "test:e2e": "vitest run --project=e2e --coverage",
     "test:unit": "vitest run --project=unit --coverage"
   },

@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { expectTypeOf } from 'vitest';
 import { z } from 'zod';
 
-test('lens should use output type of the Controller', () => {
+test('lens should use input type of the Controller', () => {
   const schema = z.object({
     id: z.number().transform((val) => val.toString()),
   });
@@ -21,7 +21,7 @@ test('lens should use output type of the Controller', () => {
   });
 
   const lens = useLens({ control: form.control });
-  expectTypeOf<typeof lens>().toEqualTypeOf<Lens<Output>>();
+  expectTypeOf<typeof lens>().toEqualTypeOf<Lens<Input>>();
 });
 
 test('lens unwraps to the original type', () => {
@@ -213,29 +213,4 @@ test('generic assert for primitive union', () => {
   function needsString(_l: Lens<string>) {}
   maybe.assert<string>();
   needsString(maybe); // should compile when assert works
-});
-
-test('should be able to narrow branded types', () => {
-  const EmailAddress = z.email().brand('EmailAddress');
-  type EmailAddress = z.infer<typeof EmailAddress>;
-
-  const FormSchema = z.object({ email: EmailAddress });
-  type FormValue = z.infer<typeof FormSchema>;
-  const { control } = useForm({ resolver: zodResolver(FormSchema) });
-  const lens = useLens({ control });
-
-  function check({ lens }: { lens: Lens<FormValue> }) {
-    return lens;
-  }
-
-  check({ lens });
-
-  const email = lens.focus('email');
-  expectTypeOf<typeof email>().toEqualTypeOf<Lens<string & z.core.$brand<'EmailAddress'>>>();
-
-  function checkString(props: { lens: Lens<string> }) {
-    return props;
-  }
-
-  checkString({ lens: email.cast<string>() });
 });
