@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import {
   type FieldArray,
   type FieldArrayPath,
@@ -29,7 +29,8 @@ export function useFieldArray<
   TKeyName extends string = 'id',
 >(props: UseFieldArrayProps<TFieldValues, TFieldArrayName, TKeyName>): UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName> {
   const original = useFieldArrayOriginal(props);
-  const newFields = useMemo(() => {
+
+  const fields = useMemo(() => {
     if (!props.getTransformer) {
       return original.fields;
     }
@@ -37,12 +38,14 @@ export function useFieldArray<
     return original.fields.map(props.getTransformer);
   }, [original.fields, props.getTransformer]);
 
-  return {
-    fields: newFields,
-    move: original.move,
-    remove: original.remove,
-    swap: original.swap,
-    prepend: (value, options) => {
+  const move = useCallback(original.move, [original.move]);
+
+  const remove = useCallback(original.remove, [original.remove]);
+
+  const swap = useCallback(original.swap, [original.swap]);
+
+  const prepend = useCallback<typeof original.prepend>(
+    (value, options) => {
       if (!props.setTransformer) {
         return original.prepend(value, options);
       }
@@ -50,7 +53,11 @@ export function useFieldArray<
       const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);
       original.prepend(newValue, options);
     },
-    append: (value, options) => {
+    [original.prepend, props.setTransformer],
+  );
+
+  const append = useCallback<typeof original.append>(
+    (value, options) => {
       if (!props.setTransformer) {
         return original.append(value, options);
       }
@@ -58,7 +65,11 @@ export function useFieldArray<
       const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);
       original.append(newValue, options);
     },
-    insert: (index, value, options) => {
+    [original.append, props.setTransformer],
+  );
+
+  const insert = useCallback<typeof original.insert>(
+    (index, value, options) => {
       if (!props.setTransformer) {
         return original.insert(index, value, options);
       }
@@ -66,7 +77,11 @@ export function useFieldArray<
       const newValue = Array.isArray(value) ? value.map(props.setTransformer) : props.setTransformer(value);
       original.insert(index, newValue, options);
     },
-    update: (index, value) => {
+    [original.insert, props.setTransformer],
+  );
+
+  const update = useCallback<typeof original.update>(
+    (index, value) => {
       if (!props.setTransformer) {
         return original.update(index, value);
       }
@@ -74,7 +89,11 @@ export function useFieldArray<
       const newValue = props.setTransformer(value);
       original.update(index, newValue);
     },
-    replace: (value) => {
+    [original.update, props.setTransformer],
+  );
+
+  const replace = useCallback<typeof original.replace>(
+    (value) => {
       if (!props.setTransformer) {
         return original.replace(value);
       }
@@ -82,5 +101,22 @@ export function useFieldArray<
       const newValue = props.setTransformer(value);
       original.replace(newValue);
     },
-  };
+    [original.replace, props.setTransformer],
+  );
+
+  const fieldArray = useMemo<UseFieldArrayReturn<TFieldValues, TFieldArrayName, TKeyName>>(() => {
+    return {
+      fields,
+      move,
+      remove,
+      swap,
+      prepend,
+      append,
+      insert,
+      update,
+      replace,
+    };
+  }, [fields, move, remove, swap, prepend, append, insert, update, replace]);
+
+  return fieldArray;
 }
