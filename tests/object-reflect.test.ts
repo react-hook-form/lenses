@@ -358,3 +358,23 @@ test('reflect with nested object preserve correct path', () => {
   expect(reflected.focus('nested.deeper').interop().name).toBe('values');
   expect(reflected.focus('nested.deeper.field').interop().name).toBe('values.a');
 });
+
+test('reflect can be called on the result of a previous reflect', () => {
+  type Input = {
+    foo: string;
+  };
+
+  const { result } = renderHook(() => {
+    const form = useForm<Input>();
+    const lens = useLens({ control: form.control });
+    return lens;
+  });
+
+  const lens = result.current;
+
+  const reflect1 = lens.reflect(({ foo }) => ({ bar: foo }));
+  expect(reflect1.focus('bar').interop().name).toBe('foo');
+
+  const reflect2 = reflect1.reflect(({ bar }) => ({ baz: bar }));
+  expect(reflect2.focus('baz').interop().name).toBe('foo');
+});
