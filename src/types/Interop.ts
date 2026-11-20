@@ -1,4 +1,7 @@
-import type { Control, FieldValues } from 'react-hook-form';
+import type { Control, FieldArrayPath, FieldValues } from 'react-hook-form';
+
+import type { LensInteropTransformerBinding } from './ArrayLens';
+import type { LensBase } from './Lens';
 
 /**
  * This is a trick to allow `control` to have typed `Control<T>` type.
@@ -42,7 +45,11 @@ export interface LensInteropFunction<T extends FieldValues, Name, R> {
   (control: LensInteropBinding<T, Name>['control'], name: LensInteropBinding<T, Name>['name']): R;
 }
 
-export interface LensInterop<T> {
+export type LensInteropResult<U> = [U] extends [any[]]
+  ? LensInteropTransformerBinding<HookFormControlShim<U>, ShimKeyName extends FieldArrayPath<HookFormControlShim<U>> ? ShimKeyName : never>
+  : LensInteropBinding<HookFormControlShim<U>, ShimKeyName>;
+
+export interface LensInterop {
   /**
    * This method returns `name` and `control` properties from react-hook-form.
    *
@@ -65,7 +72,7 @@ export interface LensInterop<T> {
    * }
    * ```
    */
-  interop(): LensInteropBinding<HookFormControlShim<T>, ShimKeyName>;
+  interop<U>(this: LensBase<U>): LensInteropResult<U>;
 
   /**
    * This method allows you to use `control` and `name` properties from react-hook-form in a callback.
@@ -88,5 +95,5 @@ export interface LensInterop<T> {
    * }
    * ```
    */
-  interop<R>(callback: LensInteropFunction<HookFormControlShim<T>, ShimKeyName, R>): R;
+  interop<U, R>(this: LensBase<U>, callback: LensInteropFunction<HookFormControlShim<U>, ShimKeyName, R>): R;
 }

@@ -1,13 +1,16 @@
 import type { BrowserNativeObject, FieldValues } from 'react-hook-form';
 
 import type { ArrayLens } from './ArrayLens';
-import type { HookFormControlShim } from './Interop';
+import type { HookFormControlShim, LensInterop } from './Interop';
 import type { ObjectLens } from './ObjectLens';
 import type { PrimitiveLens } from './PrimitiveLens';
 import type { Toolkit } from './toolkit';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface LensBase<T> extends Toolkit<T> {}
+declare const lensType: unique symbol;
+export interface LensBase<T> extends Toolkit<T>, LensInterop {
+  // covariant
+  [lensType]?: () => T;
+}
 
 /**
  * This is a type that allows you to hold the type of a form element.
@@ -21,7 +24,7 @@ export interface LensBase<T> extends Toolkit<T> {}
  * In runtime it has `control` and `name` to use latter in react-hook-form.
  * Each time you do `lens.focus('propPath')` it creates a lens that keeps nesting of paths.
  */
-export type Lens<T> = LensBase<T> & LensSelector<T>;
+export type Lens<T> = LensSelector<T> & LensBase<T>;
 
 /**
  * Why not use `T extends any[] ...`, instead of `[T] extends [any[]]`?:
@@ -33,13 +36,15 @@ export type Lens<T> = LensBase<T> & LensSelector<T>;
  */
 export type LensSelector<T> = [T] extends [any[]]
   ? ArrayLens<T>
-  : [T] extends [FieldValues]
-    ? ObjectLens<T>
-    : [T] extends [boolean | true | false]
-      ? PrimitiveLens<boolean>
-      : [T] extends [null | undefined]
-        ? never
-        : PrimitiveLens<T>;
+  : [T] extends [BrowserNativeObject]
+    ? PrimitiveLens<T>
+    : [T] extends [FieldValues]
+      ? ObjectLens<T>
+      : [T] extends [boolean | true | false]
+        ? PrimitiveLens<boolean>
+        : [T] extends [null | undefined]
+          ? never
+          : PrimitiveLens<T>;
 
 export type LensesDictionary<T> = {
   [P in keyof T]: Lens<T[P]>;

@@ -1,6 +1,6 @@
 import type { FieldArray, FieldArrayPath, FieldArrayWithId, FieldValues, Path, PathValue } from 'react-hook-form';
 
-import type { HookFormControlShim, LensInteropBinding, ShimKeyName } from './Interop';
+import type { LensInteropBinding, ShimKeyName } from './Interop';
 import type { Lens, LensesDictionary, LensesGetter, UnwrapLens } from './Lens';
 
 export interface ArrayLensGetter<T, R> {
@@ -121,32 +121,4 @@ export interface ArrayLens<T extends any[]> {
    * ```
    */
   map<F extends T, R>(fields: F, mapper: ArrayLensMapper<F[number], T[number], R>): R[];
-
-  /**
-   * This method returns `name` and `control` properties from react-hook-form.
-   * The returned object must be passed to `useFieldArray` hook from `@hookform/lenses`.
-   *
-   * @example
-   * ```tsx
-   * import { useFieldArray } from '@hookform/lenses/rhf';
-   *
-   * function Component({ lens }: { lens: Lens<{ data: string }[]> }) {
-   *   const { fields } = useFieldArray(lens.interop());
-   *
-   *   return (
-   *     <div>
-   *       {lens.map(fields, (value, l) => (
-   *         <div key={value.id}>
-   *           <StringInput label="Value" lens={l.focus('data')} />
-   *         </div>
-   *       ))}
-   *     </div>
-   *   );
-   * }
-   * ```
-   */
-  interop(): LensInteropTransformerBinding<
-    HookFormControlShim<T>,
-    ShimKeyName extends FieldArrayPath<HookFormControlShim<T>> ? ShimKeyName : never
-  >;
 }
